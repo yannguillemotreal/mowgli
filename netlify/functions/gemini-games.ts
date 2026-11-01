@@ -1,5 +1,5 @@
 import { Handler } from '@netlify/functions';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const handler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -9,12 +9,13 @@ const handler: Handler = async (event) => {
   try {
     const { missingTasksSummary } = JSON.parse(event.body || '{}');
 
-    // Initialisation de Gemini avec la clé secrète du serveur Netlify
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    // Initialisation du SDK avec la clé d'environnement Netlify
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     const prompt = `
-      Tu es un chef scout du mouvement des Scouts d'Europe, expert et créatif dans la méthode de la Jungle (Mowgli / Louveteaux, 8-12 ans).
-      Voici les 6 points de progression prioritaires qui manquent à ma meute selon le Mowgli :
+      Tu es un chef scout expert et créatif dans la méthode de la Jungle (Mowgli / Louveteaux).
+      Voici les 6 points de progression prioritaires qui manquent à ma meute :
       ${missingTasksSummary}
 
       Génère exactement 6 jeux scouts originaux, ludiques et rapides (5 minutes maximum par jeu), 
@@ -30,13 +31,10 @@ const handler: Handler = async (event) => {
       ]
     `;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-    });
+    const result = await model.generateContent(prompt);
+    let textResponse = result.response.text() || '[]';
 
-    let textResponse = response.text || '[]';
-    // Nettoyage au cas où Gemini rajoute des balises markdown ```json ... ```
+    // Nettoyage au cas où Gemini ajoute des blocs markdown
     textResponse = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
 
     return {
@@ -46,7 +44,10 @@ const handler: Handler = async (event) => {
     };
   } catch (error) {
     console.error("Erreur Netlify Function Gemini:", error);
-    return { statusCode: 500, body: JSON.stringify({ error: "Erreur lors de la génération des jeux par l'IA." }) };
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Erreur lors de la génération des jeux par l'IA." }),
+    };
   }
 };
 
