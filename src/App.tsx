@@ -23,6 +23,7 @@ interface Task {
   id: string;
   name: string;
   category: string;
+  step: string;
 }
 
 interface ValidationInfo {
@@ -38,27 +39,179 @@ interface Cub {
   validations: Record<string, ValidationInfo>;
 }
 
-const DEFAULT_TASKS: Task[] = [
-  // Promesse
-  { id: 'p1', name: 'Connaître la Loi de la Meute', category: 'Promesse' },
-  { id: 'p2', name: 'Connaître le Mowgli / Histoire', category: 'Promesse' },
-  { id: 'p3', name: 'Savoir faire un nœud plat', category: 'Promesse' },
-  // 1ère Étoile
-  { id: 'e1_1', name: 'Grand Howl & Salut', category: '1ère Étoile' },
-  { id: 'e1_2', name: 'Observer 4 nœuds de raccord', category: '1ère Étoile' },
-  { id: 'e1_3', name: 'Premiers secours de base', category: '1ère Étoile' },
-  // 2ème Étoile
-  { id: 'e2_1', name: 'Orientation boussole / carte', category: '2ème Étoile' },
-  { id: 'e2_2', name: 'Connaissance de la nature', category: '2ème Étoile' },
-  { id: 'e2_3', name: 'Service rendu à la sizaine', category: '2ème Étoile' },
+// ARBORESCENCE COMPLÈTE DES ÉPREUVES (4 étapes)
+const ALL_TASKS: Task[] = [
+  // --- PATTE TENDRE ---
+  { id: 'pt_1', step: 'Patte tendre', category: 'Être louveteau/louvette', name: 'Uniforme' },
+  { id: 'pt_2', step: 'Patte tendre', category: 'Être louveteau/louvette', name: 'Amis/Ennemis de Mowgli' },
+  { id: 'pt_3', step: 'Patte tendre', category: 'Être louveteau/louvette', name: 'Dessin ou mime de jungle' },
+  { id: 'pt_4', step: 'Patte tendre', category: 'Être louveteau/louvette', name: 'Rocher du conseil' },
+  { id: 'pt_5', step: 'Patte tendre', category: 'Être louveteau/louvette', name: 'Cinq objets' },
+  { id: 'pt_6', step: 'Patte tendre', category: 'Être louveteau/louvette', name: 'Toujours propre' },
+  { id: 'pt_7', step: 'Patte tendre', category: 'Être louveteau/louvette', name: 'Noeuds de foulard, plat, rosette' },
+  { id: 'pt_8', step: 'Patte tendre', category: 'Être louveteau/louvette', name: 'Semaphore (1er cycle)' },
+  { id: 'pt_9', step: 'Patte tendre', category: 'Fidèle à Dieu', name: 'Tenue de priere' },
+  { id: 'pt_10', step: 'Patte tendre', category: 'Fidèle à Dieu', name: 'Notre Père, Je vous Salue Marie' },
+  { id: 'pt_11', step: 'Patte tendre', category: 'Fidèle à Dieu', name: 'Priere des loups' },
+  { id: 'pt_12', step: 'Patte tendre', category: 'Fidèle à Dieu', name: 'Signe de croix' },
+  { id: 'pt_13', step: 'Patte tendre', category: 'Fidèle à Dieu', name: 'Bapteme' },
+  { id: 'pt_14', step: 'Patte tendre', category: 'Fidèle à Dieu', name: 'Tenue dans l\'église' },
+  { id: 'pt_15', step: 'Patte tendre', category: 'A mes parents, à ma patrie', name: 'Ranger sa chambre' },
+  { id: 'pt_16', step: 'Patte tendre', category: 'A mes parents, à ma patrie', name: 'Obeir à ses parents' },
+  { id: 'pt_17', step: 'Patte tendre', category: 'A mes parents, à ma patrie', name: 'Preparer son sac' },
+  { id: 'pt_18', step: 'Patte tendre', category: 'A mes parents, à ma patrie', name: 'Bon camarade à l\'ecole' },
+  { id: 'pt_19', step: 'Patte tendre', category: 'A mes parents, à ma patrie', name: 'Politesse' },
+  { id: 'pt_20', step: 'Patte tendre', category: 'A mes parents, à ma patrie', name: '5 arbres, 5 fleurs' },
+  { id: 'pt_21', step: 'Patte tendre', category: 'A mes parents, à ma patrie', name: '5 animaux de la region' },
+  { id: 'pt_22', step: 'Patte tendre', category: 'Loi', name: 'Loi, devise, maitre-mot, maximes' },
+  { id: 'pt_23', step: 'Patte tendre', category: 'BA', name: 'BA' },
+  { id: 'pt_24', step: 'Patte tendre', category: 'Frère/ Soeur', name: 'Salut' },
+  { id: 'pt_25', step: 'Patte tendre', category: 'Frère/ Soeur', name: 'Grand hurlement' },
+
+  // --- 1ÈRE ÉTOILE ---
+  { id: 'e1_1', step: '1ère étoile', category: 'Jungle', name: 'Rocher du conseil' },
+  { id: 'e1_2', step: '1ère étoile', category: 'Jungle', name: '5 chants jungle' },
+  { id: 'e1_3', step: '1ère étoile', category: 'Jungle', name: 'Danses de Jungle' },
+  { id: 'e1_4', step: '1ère étoile', category: 'Jungle', name: 'Franc-jeu' },
+  { id: 'e1_5', step: '1ère étoile', category: 'FSE', name: 'Drapeau de ton pays' },
+  { id: 'e1_6', step: '1ère étoile', category: 'FSE', name: 'Drapeau européen et Baussant' },
+  { id: 'e1_7', step: '1ère étoile', category: 'FSE', name: 'Montee des couleurs' },
+  { id: 'e1_8', step: '1ère étoile', category: 'FSE', name: 'Priere du matin et du soir' },
+  { id: 'e1_9', step: '1ère étoile', category: 'Fils ou fille de Dieu', name: 'Je crois en Dieu' },
+  { id: 'e1_10', step: '1ère étoile', category: 'Fils ou fille de Dieu', name: 'Dizainier' },
+  { id: 'e1_11', step: '1ère étoile', category: 'Fils ou fille de Dieu', name: 'Parties de la messe' },
+  { id: 'e1_12', step: '1ère étoile', category: 'Fils ou fille de Dieu', name: 'Attitude de priere' },
+  { id: 'e1_13', step: '1ère étoile', category: 'Fils ou fille de Dieu', name: 'Parabole de Jesus' },
+  { id: 'e1_14', step: '1ère étoile', category: 'Fils ou fille de Dieu', name: 'Saint François' },
+  { id: 'e1_15', step: '1ère étoile', category: 'Fils ou fille de Dieu', name: 'Quatre evangelistes' },
+  { id: 'e1_16', step: '1ère étoile', category: 'Fils ou fille de Dieu', name: 'Communion' },
+  { id: 'e1_17', step: '1ère étoile', category: 'Habile pour servir', name: 'Faire les courses' },
+  { id: 'e1_18', step: '1ère étoile', category: 'Habile pour servir', name: 'Message d\'Akela' },
+  { id: 'e1_19', step: '1ère étoile', category: 'Habile pour servir', name: 'Respect du materiel' },
+  { id: 'e1_20', step: '1ère étoile', category: 'Habile pour servir', name: 'Faire son lit et ranger' },
+  { id: 'e1_21', step: '1ère étoile', category: 'Habile pour servir', name: 'Telephone' },
+  { id: 'e1_22', step: '1ère étoile', category: 'Habile pour servir', name: 'Noeuds batelier, pêcheur, tisserand' },
+  { id: 'e1_23', step: '1ère étoile', category: 'Habile pour servir', name: 'Regles de circulation' },
+  { id: 'e1_24', step: '1ère étoile', category: 'Habile pour servir', name: 'Joli paquet' },
+  { id: 'e1_25', step: '1ère étoile', category: 'Habile pour servir', name: 'Plan de ville' },
+  { id: 'e1_26', step: '1ère étoile', category: 'Habile pour servir', name: 'Semaphore (3 premiers cycles)' },
+  { id: 'e1_27', step: '1ère étoile', category: 'Développe ton corps', name: 'Kim' },
+  { id: 'e1_28', step: '1ère étoile', category: 'Développe ton corps', name: 'Marche en equilibre' },
+  { id: 'e1_29', step: '1ère étoile', category: 'Développe ton corps', name: 'Courir' },
+  { id: 'e1_30', step: '1ère étoile', category: 'Développe ton corps', name: 'Franchir un obstacle' },
+  { id: 'e1_31', step: '1ère étoile', category: 'Développe ton corps', name: 'Sauter' },
+  { id: 'e1_32', step: '1ère étoile', category: 'Développe ton corps', name: 'Marche de Bagheera' },
+  { id: 'e1_33', step: '1ère étoile', category: 'Développe ton corps', name: 'Balle' },
+  { id: 'e1_34', step: '1ère étoile', category: 'Développe ton corps', name: 'Deplacement suspendu' },
+  { id: 'e1_35', step: '1ère étoile', category: 'Ami de la nature', name: '5 arbres' },
+  { id: 'e1_36', step: '1ère étoile', category: 'Ami de la nature', name: '5 animaux et oiseaux' },
+  { id: 'e1_37', step: '1ère étoile', category: 'Ami de la nature', name: 'Bois' },
+  { id: 'e1_38', step: '1ère étoile', category: 'Ami de la nature', name: 'Signes de piste' },
+  { id: 'e1_39', step: '1ère étoile', category: 'Ami de la nature', name: 'Animal' },
+  { id: 'e1_40', step: '1ère étoile', category: 'Ami de la nature', name: 'Effort personnel' },
+
+  // --- 2ÈME ÉTOILE ---
+  { id: 'e2_1', step: '2ème étoile', category: 'Jungle', name: 'Loi du clan et devise des loups' },
+  { id: 'e2_2', step: '2ème étoile', category: 'Jungle', name: 'Rocher du Conseil' },
+  { id: 'e2_3', step: '2ème étoile', category: 'Jungle', name: 'Sagesses de Jungle' },
+  { id: 'e2_4', step: '2ème étoile', category: 'Jungle', name: 'Faire decouvrir animaux' },
+  { id: 'e2_5', step: '2ème étoile', category: 'Jungle', name: 'Mime avec patte tendre' },
+  { id: 'e2_6', step: '2ème étoile', category: 'Jungle', name: 'Veillee' },
+  { id: 'e2_7', step: '2ème étoile', category: 'FSE', name: 'Drapeaux des pays d\'Europe' },
+  { id: 'e2_8', step: '2ème étoile', category: 'FSE', name: 'Pays des Scouts d\'Europe' },
+  { id: 'e2_9', step: '2ème étoile', category: 'FSE', name: 'Hymne national' },
+  { id: 'e2_10', step: '2ème étoile', category: 'FSE', name: 'Baden-Powell' },
+  { id: 'e2_11', step: '2ème étoile', category: 'FSE', name: 'Saint patron de ton groupe' },
+  { id: 'e2_12', step: '2ème étoile', category: 'FSE', name: 'Cantons et langues' },
+  { id: 'e2_13', step: '2ème étoile', category: 'Fils ou fille de Dieu', name: 'Saint François' },
+  { id: 'e2_14', step: '2ème étoile', category: 'Fils ou fille de Dieu', name: 'Je confesse a Dieu / Acte de contrition' },
+  { id: 'e2_15', step: '2ème étoile', category: 'Fils ou fille de Dieu', name: 'Priere des GSE d\'apres St François' },
+  { id: 'e2_16', step: '2ème étoile', category: 'Fils ou fille de Dieu', name: 'Sacrement de reconciliation' },
+  { id: 'e2_17', step: '2ème étoile', category: 'Fils ou fille de Dieu', name: 'Communion' },
+  { id: 'e2_18', step: '2ème étoile', category: 'Fils ou fille de Dieu', name: 'Texte d\'Evangile' },
+  { id: 'e2_19', step: '2ème étoile', category: 'Fils ou fille de Dieu', name: '9 fetes liturgiques' },
+  { id: 'e2_20', step: '2ème étoile', category: 'Fils ou fille de Dieu', name: 'Livre de messe' },
+  { id: 'e2_21', step: '2ème étoile', category: 'Fils ou fille de Dieu', name: 'Chapelet' },
+  { id: 'e2_22', step: '2ème étoile', category: 'Fils ou fille de Dieu', name: 'Rencontre avec un prêtre' },
+  { id: 'e2_23', step: '2ème étoile', category: 'Fils ou fille de Dieu', name: 'Prêtre, eveque' },
+  { id: 'e2_24', step: '2ème étoile', category: 'Fils ou fille de Dieu', name: 'Intentions de priere' },
+  { id: 'e2_25', step: '2ème étoile', category: 'Fils ou fille de Dieu', name: 'Aider autour de soi' },
+  { id: 'e2_26', step: '2ème étoile', category: 'Habile pour servir', name: 'Chercher un numero de telephone' },
+  { id: 'e2_27', step: '2ème étoile', category: 'Habile pour servir', name: 'Repondeur telephonique' },
+  { id: 'e2_28', step: '2ème étoile', category: 'Habile pour servir', name: 'Courriel' },
+  { id: 'e2_29', step: '2ème étoile', category: 'Habile pour servir', name: 'Noeuds de chaise, jambe-de-chien, brelage' },
+  { id: 'e2_30', step: '2ème étoile', category: 'Habile pour servir', name: 'Objet utile' },
+  { id: 'e2_31', step: '2ème étoile', category: 'Habile pour servir', name: 'Nord avec le soleil' },
+  { id: 'e2_32', step: '2ème étoile', category: 'Habile pour servir', name: 'Allumer un feu' },
+  { id: 'e2_33', step: '2ème étoile', category: 'Habile pour servir', name: 'Bouillir de l\'eau' },
+  { id: 'e2_34', step: '2ème étoile', category: 'Habile pour servir', name: 'Plaie et brulure' },
+  { id: 'e2_35', step: '2ème étoile', category: 'Habile pour servir', name: 'Feu de veillee' },
+  { id: 'e2_36', step: '2ème étoile', category: 'Habile pour servir', name: 'Monter une tente' },
+  { id: 'e2_37', step: '2ème étoile', category: 'Habile pour servir', name: 'Reportage' },
+  { id: 'e2_38', step: '2ème étoile', category: 'Habile pour servir', name: 'Sac pour le camp' },
+  { id: 'e2_39', step: '2ème étoile', category: 'Développe ton corps', name: 'Semaphore' },
+  { id: 'e2_40', step: '2ème étoile', category: 'Développe ton corps', name: 'Parcours Hebert' },
+  { id: 'e2_41', step: '2ème étoile', category: 'Ami de la nature', name: 'Composition nature' },
+  { id: 'e2_42', step: '2ème étoile', category: 'Ami de la nature', name: 'Tableau 2 semaines' },
+  { id: 'e2_43', step: '2ème étoile', category: 'Ami de la nature', name: 'Observer un element naturel et presentation' },
+  { id: 'e2_44', step: '2ème étoile', category: 'Ami de la nature', name: 'Tracer une piste' },
+  { id: 'e2_45', step: '2ème étoile', category: 'Ami de la nature', name: 'Effort personnel' },
+  { id: 'e2_46', step: '2ème étoile', category: 'Ami de la nature', name: 'Vivre la loi et la devise' },
+  { id: 'e2_47', step: '2ème étoile', category: 'Ami de la nature', name: 'Choix de 3 badges' },
+
+  // --- BADGES ---
+  { id: 'b_bl_1', step: 'Badges', category: 'Blancs', name: 'Servant de messe' },
+  { id: 'b_bl_2', step: 'Badges', category: 'Blancs', name: 'Liturgiste' },
+  { id: 'b_bl_3', step: 'Badges', category: 'Blancs', name: 'Ceremoniaire' },
+  { id: 'b_bl_4', step: 'Badges', category: 'Blancs', name: 'Lecteur' },
+  { id: 'b_bl_5', step: 'Badges', category: 'Blancs', name: 'Evangeliste' },
+  { id: 'b_bl_6', step: 'Badges', category: 'Blancs', name: 'Temoin du Christ' },
+  { id: 'b_bl_7', step: 'Badges', category: 'Blancs', name: 'Art floral' },
+  { id: 'b_bl_8', step: 'Badges', category: 'Blancs', name: 'Batisseur d\'eglise' },
+  { id: 'b_bl_9', step: 'Badges', category: 'Blancs', name: 'Hagiographe' },
+  { id: 'b_bl_10', step: 'Badges', category: 'Blancs', name: 'A l\'ecole de Marie' },
+
+  { id: 'b_rg_1', step: 'Badges', category: 'Rouges', name: 'Guide' },
+  { id: 'b_rg_2', step: 'Badges', category: 'Rouges', name: 'Messager' },
+  { id: 'b_rg_3', step: 'Badges', category: 'Rouges', name: 'Farfadet' },
+  { id: 'b_rg_4', step: 'Badges', category: 'Rouges', name: 'Aide secouriste' },
+  { id: 'b_rg_5', step: 'Badges', category: 'Rouges', name: 'Cuisinier' },
+  { id: 'b_rg_6', step: 'Badges', category: 'Rouges', name: 'Ami des petits' },
+
+  { id: 'b_ja_1', step: 'Badges', category: 'Jaunes', name: 'Artisan' },
+  { id: 'b_ja_2', step: 'Badges', category: 'Jaunes', name: 'Bon campeur' },
+  { id: 'b_ja_3', step: 'Badges', category: 'Jaunes', name: 'Grillon' },
+  { id: 'b_ja_4', step: 'Badges', category: 'Jaunes', name: 'Photographe' },
+  { id: 'b_ja_5', step: 'Badges', category: 'Jaunes', name: 'Ami des livres' },
+  { id: 'b_ja_6', step: 'Badges', category: 'Jaunes', name: 'Electricien' },
+  { id: 'b_ja_7', step: 'Badges', category: 'Jaunes', name: 'Menuisier' },
+  { id: 'b_ja_8', step: 'Badges', category: 'Jaunes', name: 'Ami des betes' },
+  { id: 'b_ja_9', step: 'Badges', category: 'Jaunes', name: 'Jardinier' },
+  { id: 'b_ja_10', step: 'Badges', category: 'Jaunes', name: 'Decorateur' },
+  { id: 'b_ja_11', step: 'Badges', category: 'Jaunes', name: 'Gabier' },
+
+  { id: 'b_blu_1', step: 'Badges', category: 'Bleus', name: 'Loup d\'Europe' },
+  { id: 'b_blu_2', step: 'Badges', category: 'Bleus', name: 'Collectionneur' },
+  { id: 'b_blu_3', step: 'Badges', category: 'Bleus', name: 'Reporter' },
+  { id: 'b_blu_4', step: 'Badges', category: 'Bleus', name: 'Kim' },
+  { id: 'b_blu_5', step: 'Badges', category: 'Bleus', name: 'Animateur de veillee' },
+  { id: 'b_blu_6', step: 'Badges', category: 'Bleus', name: 'Signaleur' },
+
+  { id: 'b_vt_1', step: 'Badges', category: 'Verts', name: 'Bon joueur' },
+  { id: 'b_vt_2', step: 'Badges', category: 'Verts', name: 'Sportif' },
+  { id: 'b_vt_3', step: 'Badges', category: 'Verts', name: 'Ceiste-kayakiste' },
+  { id: 'b_vt_4', step: 'Badges', category: 'Verts', name: 'Loup des mers' },
+  { id: 'b_vt_5', step: 'Badges', category: 'Verts', name: 'Loup des montagnes' },
+  { id: 'b_vt_6', step: 'Badges', category: 'Verts', name: 'Cycliste' },
 ];
 
 const SIZAINES = ['Blancs', 'Gris', 'Noirs'];
+const LISTE_CHEFS = ['Akela', 'Baloo', 'Bagheera', 'Kaa', 'Chil'];
+const STEPS = ['Patte tendre', '1ère étoile', '2ème étoile', 'Badges'];
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'cubs' | 'matrix' | 'profile' | 'config'>('cubs');
 
-  // Détection du code meute (URL > localStorage > DÉFAUT)
   const [packCode, setPackCode] = useState<string>(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const urlMeute = urlParams.get('meute');
@@ -70,7 +223,6 @@ export default function App() {
     return localStorage.getItem('mowgli_pack_code') || 'MEUTE-DEFAUT';
   });
 
-  // Liste des chefs mémorisée localement (avec persistance des noms ajoutés)
   const [listeChefs, setListeChefs] = useState<string[]>(() => {
     const saved = localStorage.getItem('mowgli_chefs_list');
     if (saved) {
@@ -81,10 +233,9 @@ export default function App() {
         console.error(e);
       }
     }
-    return ['Akela', 'Baloo', 'Bagheera', 'Kaa', 'Chil'];
+    return LISTE_CHEFS;
   });
 
-  // Nom du chef mémorisé sur l'appareil
   const [currentChef, setCurrentChef] = useState<string>(() => {
     return localStorage.getItem('mowgli_current_chef') || 'Akela';
   });
@@ -97,8 +248,8 @@ export default function App() {
       id: '1', 
       name: 'Augustin', 
       sizain: 'Blancs', 
-      progress: { p1: true }, 
-      validations: { p1: { date: '12/10', chef: 'Akela' } } 
+      progress: { pt_1: true }, 
+      validations: { pt_1: { date: '12/10', chef: 'Akela' } } 
     },
     { 
       id: '2', 
@@ -109,44 +260,42 @@ export default function App() {
     },
   ]);
 
-  const [tasks] = useState<Task[]>(DEFAULT_TASKS);
+  const [tasks] = useState<Task[]>(ALL_TASKS);
   const [selectedCubId, setSelectedCubId] = useState<string | null>(null);
   const [newCubName, setNewCubName] = useState('');
   const [newCubSizain, setNewCubSizain] = useState('Blancs');
   const [filterSizain, setFilterSizain] = useState('Tous');
 
-  // Mémorisation du choix du chef
+  // Gestion de l'arborescence ouverte (Étape > Catégorie)
+  const [openStep, setOpenStep] = useState<string | null>('Patte tendre');
+  const [openCategory, setOpenCategory] = useState<string | null>(null);
+
   const handleChefChange = (chef: string) => {
     setCurrentChef(chef);
     localStorage.setItem('mowgli_current_chef', chef);
   };
 
-  // Ajout d'un nouveau nom de chef personnalisé
   const handleAddCustomChef = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = newChefInput.trim();
     if (!trimmed) return;
-
-    // Évite les doublons (insensible à la casse)
     if (!listeChefs.some(c => c.toLowerCase() === trimmed.toLowerCase())) {
       const updatedList = [...listeChefs, trimmed];
       setListeChefs(updatedList);
       localStorage.setItem('mowgli_chefs_list', JSON.stringify(updatedList));
-      handleChefChange(trimmed); // Le sélectionne automatiquement
+      handleChefChange(trimmed);
     } else {
       handleChefChange(trimmed);
     }
     setNewChefInput('');
   };
 
-  // Mémorisation du code meute
   const handlePackCodeChange = (code: string) => {
     const formatted = code.toUpperCase();
     setPackCode(formatted);
     localStorage.setItem('mowgli_pack_code', formatted);
   };
 
-  // Synchronisation Firebase en temps réel
   useEffect(() => {
     const packRef = doc(db, 'meutes', packCode);
     
@@ -225,7 +374,6 @@ export default function App() {
     }
   };
 
-  const categories = Array.from(new Set(tasks.map(t => t.category)));
   const selectedCub = cubs.find(c => c.id === selectedCubId);
   const filteredCubs = filterSizain === 'Tous' ? cubs : cubs.filter(c => c.sizain === filterSizain);
 
@@ -334,7 +482,7 @@ export default function App() {
           </div>
         )}
 
-        {/* CARNET INDIVIDUEL */}
+        {/* CARNET INDIVIDUEL AVEC ARBORESCENCE PLIANTE (ACCORDÉON) */}
         {activeTab === 'cubs' && selectedCub && (
           <div>
             <div style={{ ...styles.card, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -348,37 +496,92 @@ export default function App() {
               <button onClick={() => deleteCub(selectedCub.id)} style={{ background: '#7f1d1d', color: '#fca5a5', border: 'none', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}>🗑️</button>
             </div>
 
-            {categories.map(cat => (
-              <div key={cat} style={styles.card}>
-                <h3 style={{ margin: '0 0 10px 0', fontSize: '12px', color: '#fde047', textTransform: 'uppercase', borderBottom: '1px solid #334155', paddingBottom: '6px' }}>{cat}</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {tasks.filter(t => t.category === cat).map(task => {
-                    const progress = selectedCub.progress || {};
-                    const validations = selectedCub.validations || {};
-                    const isChecked = !!progress[task.id];
-                    const valInfo = validations[task.id];
+            {/* NIVEAU 1 : LES 4 GRANDES ÉTAPES (Patte tendre, 1ère étoile, 2ème étoile, Badges) */}
+            {STEPS.map(stepName => {
+              const stepTasks = tasks.filter(t => t.step === stepName);
+              const stepValidatedCount = stepTasks.filter(t => selectedCub.progress?.[t.id]).length;
+              const isStepOpen = openStep === stepName;
 
-                    return (
-                      <div 
-                        key={task.id}
-                        onClick={() => toggleTask(selectedCub.id, task.id)}
-                        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', borderRadius: '8px', background: isChecked ? '#064e3b' : '#0f172a', border: '1px solid', borderColor: isChecked ? '#047857' : '#334155', cursor: 'pointer' }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
-                          <span>{isChecked ? '✅' : '⚪'}</span>
-                          <span>{task.name}</span>
-                        </div>
-                        {valInfo && (
-                          <span style={{ fontSize: '10px', background: '#065f46', padding: '2px 6px', borderRadius: '4px', color: '#a7f3d0', textAlign: 'right' }}>
-                            {valInfo.date} • <b>{valInfo.chef}</b>
-                          </span>
-                        )}
-                      </div>
-                    );
-                  })}
+              // Récupérer les catégories uniques de cette étape
+              const categoriesInStep = Array.from(new Set(stepTasks.map(t => t.category)));
+
+              return (
+                <div key={stepName} style={{ ...styles.card, marginBottom: '8px', padding: '12px' }}>
+                  {/* Bouton de l'Étape */}
+                  <div 
+                    onClick={() => setOpenStep(isStepOpen ? null : stepName)}
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '16px' }}>{isStepOpen ? '📂' : '📁'}</span>
+                      <span style={{ fontWeight: 'bold', color: '#fde047', fontSize: '14px' }}>{stepName}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>{stepValidatedCount}/{stepTasks.length}</span>
+                      <span style={{ fontSize: '12px', color: '#f59e0b' }}>{isStepOpen ? '▲' : '▼'}</span>
+                    </div>
+                  </div>
+
+                  {/* NIVEAU 2 : SOUS-MENUS DES CATÉGORIES */}
+                  {isStepOpen && (
+                    <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '6px', borderTop: '1px solid #334155', paddingTop: '10px' }}>
+                      {categoriesInStep.map(catName => {
+                        const catTasks = stepTasks.filter(t => t.category === catName);
+                        const catValidatedCount = catTasks.filter(t => selectedCub.progress?.[t.id]).length;
+                        const catKey = `${stepName}-${catName}`;
+                        const isCatOpen = openCategory === catKey;
+
+                        return (
+                          <div key={catName} style={{ background: '#0f172a', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
+                            {/* Bouton de la Catégorie */}
+                            <div 
+                              onClick={() => setOpenCategory(isCatOpen ? null : catKey)}
+                              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', cursor: 'pointer', background: '#1e293b' }}
+                            >
+                              <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#cbd5e1' }}>{catName}</span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span style={{ fontSize: '10px', color: '#94a3b8' }}>{catValidatedCount}/{catTasks.length}</span>
+                                <span style={{ fontSize: '10px', color: '#f59e0b' }}>{isCatOpen ? '▲' : '▼'}</span>
+                              </div>
+                            </div>
+
+                            {/* NIVEAU 3 : LISTE DES ÉPREUVES À COCHER */}
+                            {isCatOpen && (
+                              <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                {catTasks.map(task => {
+                                  const progress = selectedCub.progress || {};
+                                  const validations = selectedCub.validations || {};
+                                  const isChecked = !!progress[task.id];
+                                  const valInfo = validations[task.id];
+
+                                  return (
+                                    <div 
+                                      key={task.id}
+                                      onClick={() => toggleTask(selectedCub.id, task.id)}
+                                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', borderRadius: '6px', background: isChecked ? '#064e3b' : '#1e293b', border: '1px solid', borderColor: isChecked ? '#047857' : '#334155', cursor: 'pointer' }}
+                                    >
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                                        <span>{isChecked ? '✅' : '⚪'}</span>
+                                        <span>{task.name}</span>
+                                      </div>
+                                      {valInfo && (
+                                        <span style={{ fontSize: '9px', background: '#065f46', padding: '2px 4px', borderRadius: '4px', color: '#a7f3d0', textAlign: 'right' }}>
+                                          {valInfo.date} • <b>{valInfo.chef}</b>
+                                        </span>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
@@ -386,29 +589,32 @@ export default function App() {
         {activeTab === 'matrix' && (
           <div>
             <div style={styles.card}>
-              <h2 style={{ margin: '0 0 4px 0', fontSize: '14px', color: '#fde047' }}>Matrice de Validation</h2>
+              <h2 style={{ margin: '0 0 4px 0', fontSize: '14px', color: '#fde047' }}>Matrice de Validation Globale</h2>
               <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8' }}>Signatures en direct sous le nom : <b>{currentChef}</b></p>
             </div>
             <div style={{ ...styles.card, overflowX: 'auto', padding: '8px' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px', textAlign: 'left' }}>
+              <p style={{ fontSize: '11px', color: '#94a3b8', fontStyle: 'italic', marginBottom: '8px' }}>
+                Astuce : Utilisez plutôt le carnet individuel de chaque louveteau pour naviguer facilement dans l'arborescence des épreuves.
+              </p>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid #334155', color: '#94a3b8' }}>
-                    <th style={{ padding: '8px' }}>Louveteau</th>
-                    {tasks.map(t => <th key={t.id} style={{ padding: '8px', textAlign: 'center' }} title={t.name}>{t.name.substring(0, 4)}..</th>)}
+                    <th style={{ padding: '6px' }}>Louveteau</th>
+                    {tasks.slice(0, 15).map(t => <th key={t.id} style={{ padding: '6px', textAlign: 'center' }} title={t.name}>{t.name.substring(0, 4)}..</th>)}
                   </tr>
                 </thead>
                 <tbody>
                   {cubs.map(cub => (
                     <tr key={cub.id} style={{ borderBottom: '1px solid #1e293b' }}>
-                      <td style={{ padding: '8px', fontWeight: 'bold' }}>{cub.name}</td>
-                      {tasks.map(t => {
+                      <td style={{ padding: '6px', fontWeight: 'bold' }}>{cub.name}</td>
+                      {tasks.slice(0, 15).map(t => {
                         const progress = cub.progress || {};
                         const isChecked = !!progress[t.id];
                         return (
-                          <td key={t.id} style={{ padding: '8px', textAlign: 'center' }}>
+                          <td key={t.id} style={{ padding: '6px', textAlign: 'center' }}>
                             <button 
                               onClick={() => toggleTask(cub.id, t.id)}
-                              style={{ width: '24px', height: '24px', background: isChecked ? '#10b981' : '#0f172a', border: '1px solid #334155', borderRadius: '6px', color: '#0f172a', fontWeight: 'bold', cursor: 'pointer' }}
+                              style={{ width: '20px', height: '20px', background: isChecked ? '#10b981' : '#0f172a', border: '1px solid #334155', borderRadius: '4px', color: '#0f172a', fontWeight: 'bold', cursor: 'pointer' }}
                             >
                               {isChecked ? '✓' : ''}
                             </button>
@@ -423,7 +629,7 @@ export default function App() {
           </div>
         )}
 
-        {/* PAGE PROFIL (CHOIX DU CHEF + AJOUT PERSONNALISÉ) */}
+        {/* PAGE PROFIL (CHOIX DU CHEF) */}
         {activeTab === 'profile' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={styles.card}>
@@ -435,11 +641,10 @@ export default function App() {
                 Sélectionnez votre nom de jungle ou ajoutez-le s'il n'y est pas.
               </p>
               
-              {/* Formulaire pour ajouter un nouveau nom */}
               <form onSubmit={handleAddCustomChef} style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
                 <input 
                   type="text" 
-                  placeholder="Ajouter un autre nom (ex: Frère Gris)..." 
+                  placeholder="Ajouter un autre nom..." 
                   value={newChefInput} 
                   onChange={e => setNewChefInput(e.target.value)} 
                   style={{ ...styles.input, flex: 1 }} 
@@ -447,7 +652,6 @@ export default function App() {
                 <button type="submit" style={styles.button}>Ajouter</button>
               </form>
 
-              {/* Liste des chefs disponibles */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {listeChefs.map(chef => (
                   <button
