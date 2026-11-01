@@ -54,10 +54,8 @@ const DEFAULT_TASKS: Task[] = [
 ];
 
 const SIZAINES = ['Blancs', 'Gris', 'Noirs'];
-const LISTE_CHEFS = ['Akela', 'Baloo', 'Bagheera', 'Kaa', 'Chil'];
 
 export default function App() {
-  // Navigation inclut maintenant 'profile' et 'config' séparément
   const [activeTab, setActiveTab] = useState<'cubs' | 'matrix' | 'profile' | 'config'>('cubs');
 
   // Détection du code meute (URL > localStorage > DÉFAUT)
@@ -72,11 +70,26 @@ export default function App() {
     return localStorage.getItem('mowgli_pack_code') || 'MEUTE-DEFAUT';
   });
 
+  // Liste des chefs mémorisée localement (avec persistance des noms ajoutés)
+  const [listeChefs, setListeChefs] = useState<string[]>(() => {
+    const saved = localStorage.getItem('mowgli_chefs_list');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return ['Akela', 'Baloo', 'Bagheera', 'Kaa', 'Chil'];
+  });
+
   // Nom du chef mémorisé sur l'appareil
   const [currentChef, setCurrentChef] = useState<string>(() => {
     return localStorage.getItem('mowgli_current_chef') || 'Akela';
   });
 
+  const [newChefInput, setNewChefInput] = useState<string>('');
   const [syncStatus, setSyncStatus] = useState<'synced' | 'saving' | 'error'>('synced');
 
   const [cubs, setCubs] = useState<Cub[]>([
@@ -106,6 +119,24 @@ export default function App() {
   const handleChefChange = (chef: string) => {
     setCurrentChef(chef);
     localStorage.setItem('mowgli_current_chef', chef);
+  };
+
+  // Ajout d'un nouveau nom de chef personnalisé
+  const handleAddCustomChef = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = newChefInput.trim();
+    if (!trimmed) return;
+
+    // Évite les doublons (insensible à la casse)
+    if (!listeChefs.some(c => c.toLowerCase() === trimmed.toLowerCase())) {
+      const updatedList = [...listeChefs, trimmed];
+      setListeChefs(updatedList);
+      localStorage.setItem('mowgli_chefs_list', JSON.stringify(updatedList));
+      handleChefChange(trimmed); // Le sélectionne automatiquement
+    } else {
+      handleChefChange(trimmed);
+    }
+    setNewChefInput('');
   };
 
   // Mémorisation du code meute
@@ -224,7 +255,6 @@ export default function App() {
             <p style={{ margin: 0, fontSize: '11px', color: '#a7f3d0' }}>Canal : <b>{packCode}</b></p>
           </div>
         </div>
-        {/* Bouton profil cliquable en haut à droite pour changer de rôle rapidement */}
         <button 
           onClick={() => { setActiveTab('profile'); setSelectedCubId(null); }}
           style={{ background: '#047857', color: '#fde047', border: '1px solid #059669', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
@@ -393,7 +423,7 @@ export default function App() {
           </div>
         )}
 
-        {/* PAGE PROFIL (CHOIX DU CHEF) */}
+        {/* PAGE PROFIL (CHOIX DU CHEF + AJOUT PERSONNALISÉ) */}
         {activeTab === 'profile' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={styles.card}>
@@ -402,11 +432,24 @@ export default function App() {
               </button>
               <h2 style={{ margin: '0 0 4px 0', fontSize: '16px', color: '#fde047' }}>Mon Rôle de Chef</h2>
               <p style={{ margin: '0 0 16px 0', fontSize: '12px', color: '#94a3b8' }}>
-                Sélectionnez votre nom. C'est celui-ci qui sera enregistré sur les validations d'épreuves de ce téléphone.
+                Sélectionnez votre nom de jungle ou ajoutez-le s'il n'y est pas.
               </p>
               
+              {/* Formulaire pour ajouter un nouveau nom */}
+              <form onSubmit={handleAddCustomChef} style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                <input 
+                  type="text" 
+                  placeholder="Ajouter un autre nom (ex: Frère Gris)..." 
+                  value={newChefInput} 
+                  onChange={e => setNewChefInput(e.target.value)} 
+                  style={{ ...styles.input, flex: 1 }} 
+                />
+                <button type="submit" style={styles.button}>Ajouter</button>
+              </form>
+
+              {/* Liste des chefs disponibles */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {LISTE_CHEFS.map(chef => (
+                {listeChefs.map(chef => (
                   <button
                     key={chef}
                     onClick={() => handleChefChange(chef)}
@@ -463,7 +506,7 @@ export default function App() {
 
       </main>
 
-      {/* NAVIGATION BAS (4 onglets désormais bien séparés) */}
+      {/* NAVIGATION BAS */}
       <nav style={styles.nav}>
         <button onClick={() => { setActiveTab('cubs'); setSelectedCubId(null); }} style={{ background: 'none', border: 'none', color: activeTab === 'cubs' ? '#fde047' : '#94a3b8', cursor: 'pointer', textAlign: 'center' }}>
           <div style={{ fontSize: '16px' }}>👥</div>
