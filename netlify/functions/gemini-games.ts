@@ -6,44 +6,26 @@ const handler: Handler = async (event) => {
   }
 
   try {
-    const { missingTasksSummary } = JSON.parse(event.body || '{}');
-
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return { statusCode: 500, body: JSON.stringify({ error: "Clé API manquante sur le serveur." }) };
     }
 
-    const prompt = `
-      Tu es un chef scout expert et créatif dans la méthode de la Jungle (Mowgli / Louveteaux).
-      Voici les 6 points de progression prioritaires qui manquent à ma meute :
-      ${missingTasksSummary}
+    // Un prompt ultra-court et simple pour tester la réponse immédiate
+    const simplePrompt = "Réponds uniquement en JSON valide sous cette forme : [{\"pointName\": \"Test\", \"gameTitle\": \"Jeu Test\", \"description\": \"Fonctionne parfaitement.\"}]";
 
-      Génère exactement 6 jeux scouts originaux, ludiques et rapides (5 minutes maximum par jeu), 
-      adaptés pour faire progresser les enfants sur ces points précis lors d'une sortie.
-      
-      Réponds STRICTEMENT sous un format JSON valide (un tableau d'objets) sans texte markdown autour, avec cette structure exacte :
-      [
-        {
-          "pointName": "Nom de l'épreuve ciblée",
-          "gameTitle": "Nom original du jeu scout",
-          "description": "Règle du jeu simple et rapide en 2 phrases max."
-        }
-      ]
-    `;
-
-// Appel direct avec le modèle de dernière génération supporté sur v1beta
-const apiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }]
-    })
-  });
+    const apiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: simplePrompt }] }]
+      })
+    });
 
     if (!apiResponse.ok) {
       const errText = await apiResponse.text();
       console.error("Erreur API Gemini:", errText);
-      return { statusCode: 500, body: JSON.stringify({ error: "Erreur de communication avec l'API Gemini" }) };
+      return { statusCode: 500, body: JSON.stringify({ error: "Erreur de l'API Gemini : " + errText }) };
     }
 
     const data = await apiResponse.json();
