@@ -15,7 +15,6 @@ const firebaseConfig = {
   measurementId: "G-EX31C7TMQN"
 };
 
-// Initialisation de Firebase et de Firestore (Cloud)
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
@@ -58,8 +57,24 @@ const SIZAINES = ['Blancs', 'Gris', 'Noirs'];
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'cubs' | 'matrix' | 'config'>('cubs');
-  const [packCode, setPackCode] = useState<string>('MEUTE-DEFAUT');
-  const [currentChef, setCurrentChef] = useState<string>('Akela');
+
+  // Détection du code meute (URL > localStorage > DÉFAUT)
+  const [packCode, setPackCode] = useState<string>(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlMeute = urlParams.get('meute');
+    if (urlMeute) {
+      const formatted = urlMeute.toUpperCase();
+      localStorage.setItem('mowgli_pack_code', formatted);
+      return formatted;
+    }
+    return localStorage.getItem('mowgli_pack_code') || 'MEUTE-DEFAUT';
+  });
+
+  // Nom du chef mémorisé sur l'appareil
+  const [currentChef, setCurrentChef] = useState<string>(() => {
+    return localStorage.getItem('mowgli_current_chef') || 'Akela';
+  });
+
   const [syncStatus, setSyncStatus] = useState<'synced' | 'saving' | 'error'>('synced');
 
   const [cubs, setCubs] = useState<Cub[]>([
@@ -85,11 +100,21 @@ export default function App() {
   const [newCubSizain, setNewCubSizain] = useState('Blancs');
   const [filterSizain, setFilterSizain] = useState('Tous');
 
-  // ============================================================================
-  // SYNCHRONISATION EN TEMPS RÉEL VIA CLOUD FIREBASE
-  // ============================================================================
+  // Mémorisation du choix du chef
+  const handleChefChange = (chef: string) => {
+    setCurrentChef(chef);
+    localStorage.setItem('mowgli_current_chef', chef);
+  };
+
+  // Mémorisation du code meute
+  const handlePackCodeChange = (code: string) => {
+    const formatted = code.toUpperCase();
+    setPackCode(formatted);
+    localStorage.setItem('mowgli_pack_code', formatted);
+  };
+
+  // Synchronisation Firebase en temps réel pour le canal sélectionné
   useEffect(() => {
-    // Écouteur Firestore en direct (S'exécute automatiquement dès qu'un chef modifie un élément)
     const packRef = doc(db, 'meutes', packCode);
     
     const unsubscribe = onSnapshot(packRef, (docSnap) => {
@@ -99,19 +124,18 @@ export default function App() {
           setCubs(data.cubs);
         }
       } else {
-        // Si la meute n'existe pas encore dans le Cloud, on l'initialise
+        // Initialisation si le document n'existe pas encore dans Firestore
         setDoc(packRef, { cubs: cubs });
       }
       setSyncStatus('synced');
     }, (error) => {
-      console.error("Erreur de synchro Cloud :", error);
+      console.error("Erreur Cloud :", error);
       setSyncStatus('error');
     });
 
     return () => unsubscribe();
   }, [packCode]);
 
-  // Sauvegarde dans le Cloud
   const saveToCloud = async (updatedCubs: Cub[]) => {
     setCubs(updatedCubs);
     setSyncStatus('saving');
@@ -120,7 +144,7 @@ export default function App() {
       await setDoc(packRef, { cubs: updatedCubs });
       setSyncStatus('synced');
     } catch (e) {
-      console.error("Erreur d'écriture dans le Cloud :", e);
+      console.error("Erreur d'écriture Cloud :", e);
       setSyncStatus('error');
     }
   };
@@ -182,6 +206,8 @@ export default function App() {
     input: { background: '#0f172a', border: '1px solid #334155', color: '#fff', padding: '8px 12px', borderRadius: '10px', width: '100%', boxSizing: 'border-box' as const, fontSize: '14px' },
     nav: { background: '#1e293b', borderTop: '1px solid #334155', position: 'fixed' as const, bottom: 0, left: 0, right: 0, display: 'flex', justifyContent: 'space-around', padding: '10px 0', zIndex: 30, maxWidth: '480px', margin: '0 auto' }
   };
+
+  const currentUrl = window.location.origin + window.location.pathname + '?meute=' + packCode.toLowerCase();
 
   return (
     <div style={styles.container}>
@@ -372,7 +398,7 @@ export default function App() {
               <label style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Nom affiché lors des validations :</label>
               <select 
                 value={currentChef} 
-                onChange={e => setCurrentChef(e.target.value)}
+                onChange={e => handleChefChange(e.target.value)}
                 style={{ ...styles.input, fontWeight: 'bold', color: '#fde047' }}
               >
                 <option value="Akela">Akela</option>
@@ -389,12 +415,20 @@ export default function App() {
               <input 
                 type="text" 
                 value={packCode} 
-                onChange={e => setPackCode(e.target.value.toUpperCase())}
+                onChange={e => handlePackCodeChange(e.target.value)}
                 style={{ ...styles.input, fontWeight: 'bold', color: '#fde047', textTransform: 'uppercase' }}
               />
-              <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '6px' }}>
-                Tous les chefs qui tapent ce même code partagent les mêmes données en temps réel sur leurs téléphones.
-              </p>
+              
+              <div style={{ marginTop: '12px', background: '#0f172a', padding: '10px', borderRadius: '8px', border: '1px solid #334155' }}>
+                <span style={{ fontSize: '11px', color: '#a7f3d0', display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>🔗 Lien direct à partager aux chefs :</span>
+                <input 
+                  type="text" 
+                  readOnly 
+                  value={currentUrl} 
+                  style={{ ...styles.input, fontSize: '11px', color: '#94a3b8', background: '#1e293b' }} 
+                  onClick={e => (e.target as HTMLInputElement).select()}
+                />
+              </div>
             </div>
           </div>
         )}
