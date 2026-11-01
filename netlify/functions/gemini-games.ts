@@ -1,5 +1,4 @@
 import { Handler } from '@netlify/functions';
-import { GoogleGenAI } from '@google/genai';
 
 const handler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -11,11 +10,8 @@ const handler: Handler = async (event) => {
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      console.error("GEMINI_API_KEY est manquante dans les variables Netlify.");
       return { statusCode: 500, body: JSON.stringify({ error: "Clé API manquante sur le serveur." }) };
     }
-
-    const ai = new GoogleGenAI({ apiKey });
 
     const prompt = `
       Tu es un chef scout expert et créatif dans la méthode de la Jungle (Mowgli / Louveteaux).
@@ -35,13 +31,25 @@ const handler: Handler = async (event) => {
       ]
     `;
 
-    // Utilisation de gemini-2.0-flash pour éviter l'erreur 404
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents: prompt,
+    // Appel direct de l'API Gemini en HTTPS (contourne tous les problèmes de bundler Netlify)
+    const apiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+      })
     });
 
-    let textResponse = response.text || '[]';
+    if (!apiResponse.ok) {
+      const errText = await apiResponse.text();
+      console.error("Erreur API Gemini:", errText);
+      return { statusCode: 500, body: JSON.stringify({ error: "Erreur de communication avec l'API Gemini" }) };
+    }
+
+    const data = await apiResponse.json();
+    let textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
+    
+    // Nettoyage des balises Markdown
     textResponse = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
 
     return {
@@ -50,11 +58,8 @@ const handler: Handler = async (event) => {
       body: textResponse,
     };
   } catch (error: any) {
-    console.error("Erreur détaillée Netlify Function Gemini:", error?.message || error);
-    return { 
-      statusCode: 500, 
-      body: JSON.stringify({ error: error?.message || "Erreur interne" }) 
-    };
+    console.error("Erreur Netlify Function:", error);
+    return { statusCode: 500, body: JSON.stringify({ error: error?.message || "Erreur interne" }) };
   }
 };
 
