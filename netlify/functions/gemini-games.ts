@@ -1,5 +1,5 @@
 import { Handler } from '@netlify/functions';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 
 const handler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -9,9 +9,13 @@ const handler: Handler = async (event) => {
   try {
     const { missingTasksSummary } = JSON.parse(event.body || '{}');
 
-    // Initialisation du SDK avec la clé d'environnement Netlify
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      console.error("GEMINI_API_KEY est manquante dans les variables Netlify.");
+      return { statusCode: 500, body: JSON.stringify({ error: "Clé API manquante sur le serveur." }) };
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
 
     const prompt = `
       Tu es un chef scout expert et créatif dans la méthode de la Jungle (Mowgli / Louveteaux).
@@ -21,7 +25,7 @@ const handler: Handler = async (event) => {
       Génère exactement 6 jeux scouts originaux, ludiques et rapides (5 minutes maximum par jeu), 
       adaptés pour faire progresser les enfants sur ces points précis lors d'une sortie.
       
-      Réponds STRICTEMENT sous un format JSON valide (un tableau d'objets) sans texte autour, avec cette structure exacte :
+      Réponds STRICTEMENT sous un format JSON valide (un tableau d'objets) sans texte markdown autour, avec cette structure exacte :
       [
         {
           "pointName": "Nom de l'épreuve ciblée",
@@ -31,10 +35,13 @@ const handler: Handler = async (event) => {
       ]
     `;
 
-    const result = await model.generateContent(prompt);
-    let textResponse = result.response.text() || '[]';
+    // Utilisation de gemini-2.0-flash pour éviter l'erreur 404
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: prompt,
+    });
 
-    // Nettoyage au cas où Gemini ajoute des blocs markdown
+    let textResponse = response.text || '[]';
     textResponse = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
 
     return {
@@ -42,11 +49,11 @@ const handler: Handler = async (event) => {
       headers: { 'Content-Type': 'application/json' },
       body: textResponse,
     };
-  } catch (error) {
-    console.error("Erreur Netlify Function Gemini:", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "Erreur lors de la génération des jeux par l'IA." }),
+  } catch (error: any) {
+    console.error("Erreur détaillée Netlify Function Gemini:", error?.message || error);
+    return { 
+      statusCode: 500, 
+      body: JSON.stringify({ error: error?.message || "Erreur interne" }) 
     };
   }
 };
