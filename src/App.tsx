@@ -1,4 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, doc, onSnapshot, setDoc } from 'firebase/firestore';
+
+// ============================================================================
+// CONFIGURATION FIREBASE (Mowgli1ne)
+// ============================================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyDYoxnvjZixRJ5k3kYa23Pxzd54YhSOAc8",
+  authDomain: "mowgli1ne.firebaseapp.com",
+  projectId: "mowgli1ne",
+  storageBucket: "mowgli1ne.firebasestorage.app",
+  messagingSenderId: "796868956194",
+  appId: "1:796868956194:web:35808c1fe6c4854796fa7b",
+  measurementId: "G-EX31C7TMQN"
+};
+
+// Initialisation de Firebase et de Firestore (Cloud)
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 // --- TYPES ---
 interface Task {
@@ -41,7 +60,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'cubs' | 'matrix' | 'config'>('cubs');
   const [packCode, setPackCode] = useState<string>('MEUTE-DEFAUT');
   const [currentChef, setCurrentChef] = useState<string>('Akela');
-  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const [syncStatus, setSyncStatus] = useState<'synced' | 'saving' | 'error'>('synced');
 
   const [cubs, setCubs] = useState<Cub[]>([
     { 
@@ -58,48 +77,52 @@ export default function App() {
       progress: {}, 
       validations: {} 
     },
-    { 
-      id: '3', 
-      name: 'Thibault', 
-      sizain: 'Noirs', 
-      progress: { p1: true, p2: true }, 
-      validations: { p1: { date: '05/10', chef: 'Baloo' }, p2: { date: '12/10', chef: 'Akela' } } 
-    },
   ]);
 
   const [tasks] = useState<Task[]>(DEFAULT_TASKS);
   const [selectedCubId, setSelectedCubId] = useState<string | null>(null);
-  
   const [newCubName, setNewCubName] = useState('');
   const [newCubSizain, setNewCubSizain] = useState('Blancs');
   const [filterSizain, setFilterSizain] = useState('Tous');
 
-  // Chargement des données et écouteur de synchronisation automatique entre téléphones
+  // ============================================================================
+  // SYNCHRONISATION EN TEMPS RÉEL VIA CLOUD FIREBASE
+  // ============================================================================
   useEffect(() => {
-    const loadData = () => {
-      const savedData = localStorage.getItem(`meute_${packCode}`);
-      if (savedData) {
-        try { 
-          const parsed = JSON.parse(savedData);
-          if (Array.isArray(parsed)) setCubs(parsed);
-        } catch (e) { 
-          console.error(e); 
+    // Écouteur Firestore en direct (S'exécute automatiquement dès qu'un chef modifie un élément)
+    const packRef = doc(db, 'meutes', packCode);
+    
+    const unsubscribe = onSnapshot(packRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data && Array.isArray(data.cubs)) {
+          setCubs(data.cubs);
         }
+      } else {
+        // Si la meute n'existe pas encore dans le Cloud, on l'initialise
+        setDoc(packRef, { cubs: cubs });
       }
-    };
+      setSyncStatus('synced');
+    }, (error) => {
+      console.error("Erreur de synchro Cloud :", error);
+      setSyncStatus('error');
+    });
 
-    loadData();
-
-    // Vérification automatique toutes les 2 secondes pour synchroniser les autres téléphones
-    const interval = setInterval(loadData, 2000);
-    return () => clearInterval(interval);
+    return () => unsubscribe();
   }, [packCode]);
 
-  const saveToStorage = (updatedCubs: Cub[]) => {
+  // Sauvegarde dans le Cloud
+  const saveToCloud = async (updatedCubs: Cub[]) => {
     setCubs(updatedCubs);
-    localStorage.setItem(`meute_${packCode}`, JSON.stringify(updatedCubs));
-    setIsSyncing(true);
-    setTimeout(() => setIsSyncing(false), 500);
+    setSyncStatus('saving');
+    try {
+      const packRef = doc(db, 'meutes', packCode);
+      await setDoc(packRef, { cubs: updatedCubs });
+      setSyncStatus('synced');
+    } catch (e) {
+      console.error("Erreur d'écriture dans le Cloud :", e);
+      setSyncStatus('error');
+    }
   };
 
   const toggleTask = (cubId: string, taskId: string) => {
@@ -122,7 +145,7 @@ export default function App() {
       }
       return cub;
     });
-    saveToStorage(updated);
+    saveToCloud(updated);
   };
 
   const addCub = (e: React.FormEvent) => {
@@ -135,13 +158,13 @@ export default function App() {
       progress: {},
       validations: {}
     };
-    saveToStorage([...cubs, newCub]);
+    saveToCloud([...cubs, newCub]);
     setNewCubName('');
   };
 
   const deleteCub = (id: string) => {
     if (confirm("Supprimer ce louveteau ?")) {
-      saveToStorage(cubs.filter(c => c.id !== id));
+      saveToCloud(cubs.filter(c => c.id !== id));
       if (selectedCubId === id) setSelectedCubId(null);
     }
   };
@@ -169,26 +192,25 @@ export default function App() {
           <span style={{ fontSize: '24px' }}>⚜️</span>
           <div>
             <h1 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold' }}>
-              Carnet Mowgli {isSyncing && '🔄'}
+              Carnet Mowgli {syncStatus === 'saving' ? '☁️...' : syncStatus === 'error' ? '⚠️' : '☁️ Live'}
             </h1>
-            <p style={{ margin: 0, fontSize: '11px', color: '#a7f3d0' }}>Signé par : <b>{currentChef}</b></p>
+            <p style={{ margin: 0, fontSize: '11px', color: '#a7f3d0' }}>Chef connecté : <b>{currentChef}</b></p>
           </div>
         </div>
         <button 
           onClick={() => { setActiveTab('config'); setSelectedCubId(null); }}
           style={{ background: '#047857', color: '#fde047', border: '1px solid #059669', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}
         >
-          🔗 {packCode}
+          🔑 {packCode}
         </button>
       </header>
 
       {/* CONTENU */}
       <main style={styles.main}>
         
-        {/* VUE LOUVETEAUX (LISTE) */}
+        {/* VUE LOUVETEAUX */}
         {activeTab === 'cubs' && !selectedCub && (
           <div>
-            {/* Filtres sizaines */}
             <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '12px' }}>
               <button 
                 onClick={() => setFilterSizain('Tous')}
@@ -207,7 +229,6 @@ export default function App() {
               ))}
             </div>
 
-            {/* Liste louveteaux */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {filteredCubs.map(cub => {
                 const progress = cub.progress || {};
@@ -241,7 +262,6 @@ export default function App() {
               })}
             </div>
 
-            {/* Ajout rapide */}
             <div style={{ ...styles.card, marginTop: '16px' }}>
               <h3 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#fde047' }}>➕ Ajouter un louveteau</h3>
               <form onSubmit={addCub} style={{ display: 'flex', gap: '8px' }}>
@@ -255,7 +275,7 @@ export default function App() {
           </div>
         )}
 
-        {/* CARNET INDIVIDUEL ET SIGNATURES */}
+        {/* CARNET INDIVIDUEL */}
         {activeTab === 'cubs' && selectedCub && (
           <div>
             <div style={{ ...styles.card, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -308,7 +328,7 @@ export default function App() {
           <div>
             <div style={styles.card}>
               <h2 style={{ margin: '0 0 4px 0', fontSize: '14px', color: '#fde047' }}>Matrice de Validation</h2>
-              <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8' }}>Signature rapide par <b>{currentChef}</b></p>
+              <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8' }}>Signatures en direct sous le nom : <b>{currentChef}</b></p>
             </div>
             <div style={{ ...styles.card, overflowX: 'auto', padding: '8px' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px', textAlign: 'left' }}>
@@ -344,12 +364,12 @@ export default function App() {
           </div>
         )}
 
-        {/* CONFIG ET NOM DU CHEF */}
+        {/* CONFIG */}
         {activeTab === 'config' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={styles.card}>
               <h2 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#fde047' }}>Votre identité (Chef)</h2>
-              <label style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Qui valide les épreuves sur ce téléphone ?</label>
+              <label style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Nom affiché lors des validations :</label>
               <select 
                 value={currentChef} 
                 onChange={e => setCurrentChef(e.target.value)}
@@ -364,14 +384,17 @@ export default function App() {
             </div>
 
             <div style={styles.card}>
-              <h2 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#fde047' }}>Partage entre Chefs</h2>
-              <label style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Code secret de la Meute :</label>
+              <h2 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#fde047' }}>Canal Meute (Cloud)</h2>
+              <label style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Code d'accès de votre Meute :</label>
               <input 
                 type="text" 
                 value={packCode} 
                 onChange={e => setPackCode(e.target.value.toUpperCase())}
                 style={{ ...styles.input, fontWeight: 'bold', color: '#fde047', textTransform: 'uppercase' }}
               />
+              <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '6px' }}>
+                Tous les chefs qui tapent ce même code partagent les mêmes données en temps réel sur leurs téléphones.
+              </p>
             </div>
           </div>
         )}
