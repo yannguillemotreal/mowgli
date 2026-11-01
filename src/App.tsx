@@ -210,7 +210,6 @@ const LISTE_CHEFS = ['Akela', 'Baloo', 'Bagheera', 'Kaa', 'Chil'];
 const STEPS = ['Patte tendre', '1ère étoile', '2ème étoile', 'Badges'];
 
 export default function App() {
-  // L'onglet 'matrix' est remplacé / renommé par 'ai'
   const [activeTab, setActiveTab] = useState<'cubs' | 'ai' | 'profile' | 'config'>('cubs');
 
   const [packCode, setPackCode] = useState<string>(() => {
@@ -374,16 +373,12 @@ export default function App() {
     }
   };
 
-  // ============================================================================
   // LOGIQUE INTELLIGENTE : SÉLECTION DES 6 POINTS DE PROGRESSION & JEUX 5'
-  // ============================================================================
   const getAiRecommendations = () => {
     if (cubs.length === 0) return { selectedTasks: [], activities: [] };
 
-    // Ordre de priorité des étapes
     const stepPriority = ['Patte tendre', '1ère étoile', '2ème étoile', 'Badges'];
 
-    // Pour chaque tâche, on compte combien de louveteaux NE L'ONT PAS ENCORE VALIDÉE
     const taskDeficit: { task: Task; missingCount: number; stepIndex: number }[] = tasks.map(task => {
       let missing = 0;
       cubs.forEach(cub => {
@@ -393,7 +388,6 @@ export default function App() {
       return { task, missingCount: missing, stepIndex };
     });
 
-    // Tri par priorité d'étape (le plus petit index d'abord), puis par le plus grand nombre de manquants
     taskDeficit.sort((a, b) => {
       if (a.stepIndex !== b.stepIndex) {
         return a.stepIndex - b.stepIndex;
@@ -401,10 +395,8 @@ export default function App() {
       return b.missingCount - a.missingCount;
     });
 
-    // On sélectionne les 6 meilleures épreuves à travailler collectivement
     const selectedTasks = taskDeficit.slice(0, 6).map(item => item.task);
 
-    // Association de 6 jeux scouts rapides (max 5 minutes) selon la nature de l'épreuve
     const activities = selectedTasks.map((t, index) => {
       let gameName = "Grand Jeu de la Jungle";
       let rule = "Jeu rapide de 5 minutes axé sur la cohésion de sizaine pour acquérir ce point.";
@@ -670,7 +662,7 @@ export default function App() {
           </div>
         )}
 
-        {/* ONGLET IA / PRÉPARATION DE SORTIE (REMPLACE LA MATRICE) */}
+        {/* ONGLET IA / PRÉPARATION DE SORTIE */}
         {activeTab === 'ai' && (
           <div>
             <div style={styles.card}>
@@ -680,7 +672,6 @@ export default function App() {
               </p>
             </div>
 
-            {/* TABLEAU COMPACT MATRICE / OBJECTIFS */}
             <div style={{ ...styles.card, overflowX: 'auto', padding: '12px' }}>
               <h3 style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#fde047' }}>📊 Matrice des 6 Objectifs prioritaires</h3>
               {cubs.length === 0 ? (
@@ -715,7 +706,6 @@ export default function App() {
                 </table>
               )}
 
-              {/* Légende rapide des 6 points */}
               <div style={{ marginTop: '12px', borderTop: '1px solid #334155', paddingTop: '8px' }}>
                 <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#a7f3d0' }}>Détail des 6 points ciblés :</span>
                 <ul style={{ margin: '4px 0 0 0', paddingLeft: '16px', fontSize: '11px', color: '#cbd5e1' }}>
@@ -728,7 +718,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* PROPOSITIONS DE JEUX DE 5' */}
             <div style={styles.card}>
               <h3 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#fde047' }}>⚡ 6 Jeux scouts express (5 minutes max)</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -833,7 +822,7 @@ export default function App() {
 
       </main>
 
-      {/* NAVIGATION BAS (Le 2ème onglet est désormais l'IA de Sortie) */}
+      {/* NAVIGATION BAS */}
       <nav style={styles.nav}>
         <button onClick={() => { setActiveTab('cubs'); setSelectedCubId(null); }} style={{ background: 'none', border: 'none', color: activeTab === 'cubs' ? '#fde047' : '#94a3b8', cursor: 'pointer', textAlign: 'center' }}>
           <div style={{ fontSize: '16px' }}>👥</div>
