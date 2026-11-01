@@ -54,9 +54,11 @@ const DEFAULT_TASKS: Task[] = [
 ];
 
 const SIZAINES = ['Blancs', 'Gris', 'Noirs'];
+const LISTE_CHEFS = ['Akela', 'Baloo', 'Bagheera', 'Kaa', 'Chil'];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'cubs' | 'matrix' | 'config'>('cubs');
+  // Navigation inclut maintenant 'profile' et 'config' séparément
+  const [activeTab, setActiveTab] = useState<'cubs' | 'matrix' | 'profile' | 'config'>('cubs');
 
   // Détection du code meute (URL > localStorage > DÉFAUT)
   const [packCode, setPackCode] = useState<string>(() => {
@@ -113,7 +115,7 @@ export default function App() {
     localStorage.setItem('mowgli_pack_code', formatted);
   };
 
-  // Synchronisation Firebase en temps réel pour le canal sélectionné
+  // Synchronisation Firebase en temps réel
   useEffect(() => {
     const packRef = doc(db, 'meutes', packCode);
     
@@ -124,7 +126,6 @@ export default function App() {
           setCubs(data.cubs);
         }
       } else {
-        // Initialisation si le document n'existe pas encore dans Firestore
         setDoc(packRef, { cubs: cubs });
       }
       setSyncStatus('synced');
@@ -220,14 +221,16 @@ export default function App() {
             <h1 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold' }}>
               Carnet Mowgli {syncStatus === 'saving' ? '☁️...' : syncStatus === 'error' ? '⚠️' : '☁️ Live'}
             </h1>
-            <p style={{ margin: 0, fontSize: '11px', color: '#a7f3d0' }}>Chef connecté : <b>{currentChef}</b></p>
+            <p style={{ margin: 0, fontSize: '11px', color: '#a7f3d0' }}>Canal : <b>{packCode}</b></p>
           </div>
         </div>
+        {/* Bouton profil cliquable en haut à droite pour changer de rôle rapidement */}
         <button 
-          onClick={() => { setActiveTab('config'); setSelectedCubId(null); }}
-          style={{ background: '#047857', color: '#fde047', border: '1px solid #059669', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+          onClick={() => { setActiveTab('profile'); setSelectedCubId(null); }}
+          style={{ background: '#047857', color: '#fde047', border: '1px solid #059669', padding: '6px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+          title="Changer de rôle (Chef)"
         >
-          🔑 {packCode}
+          👤 {currentChef}
         </button>
       </header>
 
@@ -390,27 +393,52 @@ export default function App() {
           </div>
         )}
 
-        {/* CONFIG */}
+        {/* PAGE PROFIL (CHOIX DU CHEF) */}
+        {activeTab === 'profile' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={styles.card}>
+              <button onClick={() => setActiveTab('cubs')} style={{ background: 'none', border: 'none', color: '#fde047', padding: 0, cursor: 'pointer', fontSize: '12px', marginBottom: '8px' }}>
+                ← Retour au carnet
+              </button>
+              <h2 style={{ margin: '0 0 4px 0', fontSize: '16px', color: '#fde047' }}>Mon Rôle de Chef</h2>
+              <p style={{ margin: '0 0 16px 0', fontSize: '12px', color: '#94a3b8' }}>
+                Sélectionnez votre nom. C'est celui-ci qui sera enregistré sur les validations d'épreuves de ce téléphone.
+              </p>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {LISTE_CHEFS.map(chef => (
+                  <button
+                    key={chef}
+                    onClick={() => handleChefChange(chef)}
+                    style={{
+                      padding: '12px 16px',
+                      borderRadius: '10px',
+                      border: '1px solid',
+                      borderColor: currentChef === chef ? '#f59e0b' : '#334155',
+                      background: currentChef === chef ? '#064e3b' : '#0f172a',
+                      color: currentChef === chef ? '#fde047' : '#f8fafc',
+                      fontWeight: 'bold',
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <span>{chef}</span>
+                    {currentChef === chef && <span>✅ Actif</span>}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* PAGE CONFIGURATION / MEUTE */}
         {activeTab === 'config' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={styles.card}>
-              <h2 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#fde047' }}>Votre identité (Chef)</h2>
-              <label style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Nom affiché lors des validations :</label>
-              <select 
-                value={currentChef} 
-                onChange={e => handleChefChange(e.target.value)}
-                style={{ ...styles.input, fontWeight: 'bold', color: '#fde047' }}
-              >
-                <option value="Akela">Akela</option>
-                <option value="Baloo">Baloo</option>
-                <option value="Bagheera">Bagheera</option>
-                <option value="Kaa">Kaa</option>
-                <option value="Chil">Chil</option>
-              </select>
-            </div>
-
-            <div style={styles.card}>
-              <h2 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#fde047' }}>Canal Meute (Cloud)</h2>
+              <h2 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#fde047' }}>Paramètres de la Meute (Cloud)</h2>
               <label style={{ fontSize: '11px', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>Code d'accès de votre Meute :</label>
               <input 
                 type="text" 
@@ -420,7 +448,7 @@ export default function App() {
               />
               
               <div style={{ marginTop: '12px', background: '#0f172a', padding: '10px', borderRadius: '8px', border: '1px solid #334155' }}>
-                <span style={{ fontSize: '11px', color: '#a7f3d0', display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>🔗 Lien direct à partager aux chefs :</span>
+                <span style={{ fontSize: '11px', color: '#a7f3d0', display: 'block', fontWeight: 'bold', marginBottom: '4px' }}>🔗 Lien direct à partager aux chefs de cette meute :</span>
                 <input 
                   type="text" 
                   readOnly 
@@ -435,7 +463,7 @@ export default function App() {
 
       </main>
 
-      {/* NAVIGATION BAS */}
+      {/* NAVIGATION BAS (4 onglets désormais bien séparés) */}
       <nav style={styles.nav}>
         <button onClick={() => { setActiveTab('cubs'); setSelectedCubId(null); }} style={{ background: 'none', border: 'none', color: activeTab === 'cubs' ? '#fde047' : '#94a3b8', cursor: 'pointer', textAlign: 'center' }}>
           <div style={{ fontSize: '16px' }}>👥</div>
@@ -445,9 +473,13 @@ export default function App() {
           <div style={{ fontSize: '16px' }}>📋</div>
           <div style={{ fontSize: '10px' }}>Matrice</div>
         </button>
+        <button onClick={() => { setActiveTab('profile'); setSelectedCubId(null); }} style={{ background: 'none', border: 'none', color: activeTab === 'profile' ? '#fde047' : '#94a3b8', cursor: 'pointer', textAlign: 'center' }}>
+          <div style={{ fontSize: '16px' }}>👤</div>
+          <div style={{ fontSize: '10px' }}>Mon Rôle</div>
+        </button>
         <button onClick={() => { setActiveTab('config'); setSelectedCubId(null); }} style={{ background: 'none', border: 'none', color: activeTab === 'config' ? '#fde047' : '#94a3b8', cursor: 'pointer', textAlign: 'center' }}>
           <div style={{ fontSize: '16px' }}>⚙️</div>
-          <div style={{ fontSize: '10px' }}>Partage / Chef</div>
+          <div style={{ fontSize: '10px' }}>Meute</div>
         </button>
       </nav>
 
