@@ -39,7 +39,7 @@ interface Cub {
   validations: Record<string, ValidationInfo>;
 }
 
-// ARBORESCENCE COMPLÈTE DES ÉPREUVES (4 étapes)
+// ARBORESCENCE COMPLÈTE DES ÉPREUVES
 const ALL_TASKS: Task[] = [
   // --- PATTE TENDRE ---
   { id: 'pt_1', step: 'Patte tendre', category: 'Être louveteau/louvette', name: 'Uniforme' },
@@ -160,7 +160,7 @@ const ALL_TASKS: Task[] = [
   { id: 'e2_47', step: '2ème étoile', category: 'Ami de la nature', name: 'Choix de 3 badges' },
 
   // --- BADGES ---
-  { id: 'b_bl_1', step: 'Badges', category: 'Blancs', name: 'Servant de messe' },
+  { id: 'b_bl_1', step: 'Badges', category: 'Badges', name: 'Servant de messe' },
   { id: 'b_bl_2', step: 'Badges', category: 'Badges', name: 'Liturgiste' },
   { id: 'b_bl_3', step: 'Badges', category: 'Badges', name: 'Ceremoniaire' },
   { id: 'b_bl_4', step: 'Badges', category: 'Badges', name: 'Lecteur' },
@@ -210,7 +210,8 @@ const LISTE_CHEFS = ['Akela', 'Baloo', 'Bagheera', 'Kaa', 'Chil'];
 const STEPS = ['Patte tendre', '1ère étoile', '2ème étoile', 'Badges'];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'cubs' | 'matrix' | 'profile' | 'config'>('cubs');
+  // L'onglet 'matrix' est remplacé / renommé par 'ai'
+  const [activeTab, setActiveTab] = useState<'cubs' | 'ai' | 'profile' | 'config'>('cubs');
 
   const [packCode, setPackCode] = useState<string>(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -266,7 +267,6 @@ export default function App() {
   const [newCubSizain, setNewCubSizain] = useState('Blancs');
   const [filterSizain, setFilterSizain] = useState('Tous');
 
-  // Gestion de l'arborescence ouverte (Étape > Catégorie)
   const [openStep, setOpenStep] = useState<string | null>('Patte tendre');
   const [openCategory, setOpenCategory] = useState<string | null>(null);
 
@@ -374,6 +374,76 @@ export default function App() {
     }
   };
 
+  // ============================================================================
+  // LOGIQUE INTELLIGENTE : SÉLECTION DES 6 POINTS DE PROGRESSION & JEUX 5'
+  // ============================================================================
+  const getAiRecommendations = () => {
+    if (cubs.length === 0) return { selectedTasks: [], activities: [] };
+
+    // Ordre de priorité des étapes
+    const stepPriority = ['Patte tendre', '1ère étoile', '2ème étoile', 'Badges'];
+
+    // Pour chaque tâche, on compte combien de louveteaux NE L'ONT PAS ENCORE VALIDÉE
+    const taskDeficit: { task: Task; missingCount: number; stepIndex: number }[] = tasks.map(task => {
+      let missing = 0;
+      cubs.forEach(cub => {
+        if (!cub.progress?.[task.id]) missing++;
+      });
+      const stepIndex = stepPriority.indexOf(task.step);
+      return { task, missingCount: missing, stepIndex };
+    });
+
+    // Tri par priorité d'étape (le plus petit index d'abord), puis par le plus grand nombre de manquants
+    taskDeficit.sort((a, b) => {
+      if (a.stepIndex !== b.stepIndex) {
+        return a.stepIndex - b.stepIndex;
+      }
+      return b.missingCount - a.missingCount;
+    });
+
+    // On sélectionne les 6 meilleures épreuves à travailler collectivement
+    const selectedTasks = taskDeficit.slice(0, 6).map(item => item.task);
+
+    // Association de 6 jeux scouts rapides (max 5 minutes) selon la nature de l'épreuve
+    const activities = selectedTasks.map((t, index) => {
+      let gameName = "Grand Jeu de la Jungle";
+      let rule = "Jeu rapide de 5 minutes axé sur la cohésion de sizaine pour acquérir ce point.";
+
+      const nameLower = t.name.toLowerCase();
+      if (nameLower.includes('noeud') || nameLower.includes('brelage')) {
+        gameName = "Le Relais des Nœuds Express";
+        rule = "En sizaine, chaque louveteau court faire un nœud imparti sur un piquet, tape dans la main du suivant. Chrono : 5 minutes max.";
+      } else if (nameLower.includes('semaphore') || nameLower.includes('indicatif')) {
+        gameName = "Le Télégramme de Mowgli";
+        rule = "Un chef mime ou transmet un mot en sémaphore d'un côté du camp, le premier louveteau qui décode court le relayer.";
+      } else if (nameLower.includes('prière') || nameLower.includes('dizainier') || nameLower.includes('messe') || nameLower.includes('dieu')) {
+        gameName = "La Minute du Loup Contemplatif";
+        rule = "Rassemblement autour du Rocher du Conseil pour un court topo et un chant gestué de 5 minutes avant le grand jeu.";
+      } else if (nameLower.includes('kim') || nameLower.includes('objet') || nameLower.includes('observation')) {
+        gameName = "Le Kim de Bagheera";
+        rule = "10 objets posés sur une bâche, on observe 1 minute, on cache, les louveteaux écrivent ce qu'ils ont vu en 3 minutes.";
+      } else if (nameLower.includes('marche') || nameLower.includes('corps') || nameLower.includes('saut') || nameLower.includes('courir')) {
+        gameName = "Le Parcours de la Canopée";
+        rule = "Petit parcours d'agilité chronométré en un contre un à travers les arbres du camp, sans courir dans les zones interdites.";
+      } else if (nameLower.includes('arbre') || nameLower.includes('animal') || nameLower.includes('nature') || nameLower.includes('piste')) {
+        gameName = "Pistage Éclair en Sizaine";
+        rule = "Suivre une piste de signes de piste de 50 mètres tracée à la craie ou au bois mort autour du lieu de rassemblement.";
+      }
+
+      return {
+        id: t.id,
+        pointName: t.name,
+        step: t.step,
+        gameTitle: gameName,
+        description: rule
+      };
+    });
+
+    return { selectedTasks, activities };
+  };
+
+  const aiData = getAiRecommendations();
+
   const selectedCub = cubs.find(c => c.id === selectedCubId);
   const filteredCubs = filterSizain === 'Tous' ? cubs : cubs.filter(c => c.sizain === filterSizain);
 
@@ -448,7 +518,6 @@ export default function App() {
                     onClick={() => setSelectedCubId(cub.id)}
                     style={{ ...styles.card, cursor: 'pointer', margin: 0, marginBottom: '8px', padding: '12px' }}
                   >
-                    {/* Ligne principale du louveteau */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <div style={{ width: '36px', height: '36px', background: '#065f46', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#fde047', fontSize: '14px' }}>
@@ -467,14 +536,11 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Jauges pour les 4 grandes étapes de progression */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginTop: '10px', borderTop: '1px solid #334155', paddingTop: '8px' }}>
                       {STEPS.map(stepName => {
                         const stepTasks = tasks.filter(t => t.step === stepName);
                         const stepVal = stepTasks.filter(t => progress[t.id]).length;
                         const stepPct = stepTasks.length > 0 ? Math.round((stepVal / stepTasks.length) * 100) : 0;
-                        
-                        // Petits labels courts pour les étapes
                         const shortName = stepName === 'Patte tendre' ? 'Patte' : stepName === '1ère étoile' ? '1ère Étoile' : stepName === '2ème étoile' ? '2ème Étoile' : 'Badges';
 
                         return (
@@ -508,7 +574,7 @@ export default function App() {
           </div>
         )}
 
-        {/* CARNET INDIVIDUEL AVEC ARBORESCENCE PLIANTE (ACCORDÉON) */}
+        {/* CARNET INDIVIDUEL */}
         {activeTab === 'cubs' && selectedCub && (
           <div>
             <div style={{ ...styles.card, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -522,12 +588,10 @@ export default function App() {
               <button onClick={() => deleteCub(selectedCub.id)} style={{ background: '#7f1d1d', color: '#fca5a5', border: 'none', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer' }}>🗑️</button>
             </div>
 
-            {/* NIVEAU 1 : LES 4 GRANDES ÉTAPES (Patte tendre, 1ère étoile, 2ème étoile, Badges) */}
             {STEPS.map(stepName => {
               const stepTasks = tasks.filter(t => t.step === stepName);
               const stepValidatedCount = stepTasks.filter(t => selectedCub.progress?.[t.id]).length;
               const isStepOpen = openStep === stepName;
-
               const categoriesInStep = Array.from(new Set(stepTasks.map(t => t.category)));
 
               return (
@@ -546,7 +610,6 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* NIVEAU 2 : SOUS-MENUS DES CATÉGORIES */}
                   {isStepOpen && (
                     <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '6px', borderTop: '1px solid #334155', paddingTop: '10px' }}>
                       {categoriesInStep.map(catName => {
@@ -568,7 +631,6 @@ export default function App() {
                               </div>
                             </div>
 
-                            {/* NIVEAU 3 : LISTE DES ÉPREUVES À COCHER */}
                             {isCatOpen && (
                               <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                 {catTasks.map(task => {
@@ -608,46 +670,84 @@ export default function App() {
           </div>
         )}
 
-        {/* MATRICE */}
-        {activeTab === 'matrix' && (
+        {/* ONGLET IA / PRÉPARATION DE SORTIE (REMPLACE LA MATRICE) */}
+        {activeTab === 'ai' && (
           <div>
             <div style={styles.card}>
-              <h2 style={{ margin: '0 0 4px 0', fontSize: '14px', color: '#fde047' }}>Matrice de Validation Globale</h2>
-              <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8' }}>Signatures en direct sous le nom : <b>{currentChef}</b></p>
-            </div>
-            <div style={{ ...styles.card, overflowX: 'auto', padding: '8px' }}>
-              <p style={{ fontSize: '11px', color: '#94a3b8', fontStyle: 'italic', marginBottom: '8px' }}>
-                Astuce : Utilisez le carnet individuel de chaque louveteau pour naviguer facilement dans l'arborescence des épreuves.
+              <h2 style={{ margin: '0 0 6px 0', fontSize: '16px', color: '#fde047' }}>🤖 Assistant IA & Sortie de Meute</h2>
+              <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8', lineHeight: '1.4' }}>
+                L'IA analyse les carnets de toute la meute (priorité Patte Tendre ➔ 1ère Étoile ➔ 2ème Étoile ➔ Badges) et vous propose les 6 objectifs parfaits pour votre prochaine sortie !
               </p>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', textAlign: 'left' }}>
-                <thead>
-                  <tr style={{ borderBottom: '1px solid #334155', color: '#94a3b8' }}>
-                    <th style={{ padding: '6px' }}>Louveteau</th>
-                    {tasks.slice(0, 15).map(t => <th key={t.id} style={{ padding: '6px', textAlign: 'center' }} title={t.name}>{t.name.substring(0, 4)}..</th>)}
-                  </tr>
-                </thead>
-                <tbody>
-                  {cubs.map(cub => (
-                    <tr key={cub.id} style={{ borderBottom: '1px solid #1e293b' }}>
-                      <td style={{ padding: '6px', fontWeight: 'bold' }}>{cub.name}</td>
-                      {tasks.slice(0, 15).map(t => {
-                        const progress = cub.progress || {};
-                        const isChecked = !!progress[t.id];
-                        return (
-                          <td key={t.id} style={{ padding: '6px', textAlign: 'center' }}>
-                            <button 
-                              onClick={() => toggleTask(cub.id, t.id)}
-                              style={{ width: '20px', height: '20px', background: isChecked ? '#10b981' : '#0f172a', border: '1px solid #334155', borderRadius: '4px', color: '#0f172a', fontWeight: 'bold', cursor: 'pointer' }}
-                            >
-                              {isChecked ? '✓' : ''}
-                            </button>
-                          </td>
-                        );
-                      })}
+            </div>
+
+            {/* TABLEAU COMPACT MATRICE / OBJECTIFS */}
+            <div style={{ ...styles.card, overflowX: 'auto', padding: '12px' }}>
+              <h3 style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#fde047' }}>📊 Matrice des 6 Objectifs prioritaires</h3>
+              {cubs.length === 0 ? (
+                <p style={{ fontSize: '12px', color: '#94a3b8' }}>Ajoutez des louveteaux pour activer l'analyse.</p>
+              ) : (
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', textAlign: 'center' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid #334155', color: '#94a3b8' }}>
+                      <th style={{ padding: '6px', textAlign: 'left' }}>Louveteau</th>
+                      {aiData.selectedTasks.map((t, idx) => (
+                        <th key={t.id} style={{ padding: '6px', maxWidth: '60px' }} title={`${t.step} - ${t.name}`}>
+                          Obj {idx + 1}
+                        </th>
+                      ))}
                     </tr>
+                  </thead>
+                  <tbody>
+                    {cubs.map(cub => (
+                      <tr key={cub.id} style={{ borderBottom: '1px solid #1e293b' }}>
+                        <td style={{ padding: '6px', textAlign: 'left', fontWeight: 'bold', whiteSpace: 'nowrap' }}>{cub.name}</td>
+                        {aiData.selectedTasks.map(t => {
+                          const isAcquired = !!cub.progress?.[t.id];
+                          return (
+                            <td key={t.id} style={{ padding: '6px' }}>
+                              <span style={{ fontSize: '14px' }}>{isAcquired ? '✅' : '❌'}</span>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+
+              {/* Légende rapide des 6 points */}
+              <div style={{ marginTop: '12px', borderTop: '1px solid #334155', paddingTop: '8px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#a7f3d0' }}>Détail des 6 points ciblés :</span>
+                <ul style={{ margin: '4px 0 0 0', paddingLeft: '16px', fontSize: '11px', color: '#cbd5e1' }}>
+                  {aiData.selectedTasks.map((t, idx) => (
+                    <li key={t.id} style={{ marginBottom: '2px' }}>
+                      <b>Obj {idx + 1} ({t.step}) :</b> {t.name}
+                    </li>
                   ))}
-                </tbody>
-              </table>
+                </ul>
+              </div>
+            </div>
+
+            {/* PROPOSITIONS DE JEUX DE 5' */}
+            <div style={styles.card}>
+              <h3 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#fde047' }}>⚡ 6 Jeux scouts express (5 minutes max)</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {aiData.activities.map((act, idx) => (
+                  <div key={act.id} style={{ background: '#0f172a', padding: '10px', borderRadius: '8px', border: '1px solid #334155' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#f59e0b' }}>
+                        {idx + 1}. {act.gameTitle}
+                      </span>
+                      <span style={{ fontSize: '9px', background: '#065f46', color: '#a7f3d0', padding: '2px 6px', borderRadius: '4px' }}>
+                        Cible : {act.pointName}
+                      </span>
+                    </div>
+                    <p style={{ margin: 0, fontSize: '11px', color: '#94a3b8', lineHeight: '1.3' }}>
+                      {act.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -733,15 +833,15 @@ export default function App() {
 
       </main>
 
-      {/* NAVIGATION BAS */}
+      {/* NAVIGATION BAS (Le 2ème onglet est désormais l'IA de Sortie) */}
       <nav style={styles.nav}>
         <button onClick={() => { setActiveTab('cubs'); setSelectedCubId(null); }} style={{ background: 'none', border: 'none', color: activeTab === 'cubs' ? '#fde047' : '#94a3b8', cursor: 'pointer', textAlign: 'center' }}>
           <div style={{ fontSize: '16px' }}>👥</div>
           <div style={{ fontSize: '10px' }}>Louveteaux</div>
         </button>
-        <button onClick={() => { setActiveTab('matrix'); setSelectedCubId(null); }} style={{ background: 'none', border: 'none', color: activeTab === 'matrix' ? '#fde047' : '#94a3b8', cursor: 'pointer', textAlign: 'center' }}>
-          <div style={{ fontSize: '16px' }}>📋</div>
-          <div style={{ fontSize: '10px' }}>Matrice</div>
+        <button onClick={() => { setActiveTab('ai'); setSelectedCubId(null); }} style={{ background: 'none', border: 'none', color: activeTab === 'ai' ? '#fde047' : '#94a3b8', cursor: 'pointer', textAlign: 'center' }}>
+          <div style={{ fontSize: '16px' }}>🤖</div>
+          <div style={{ fontSize: '10px' }}>IA / Sortie</div>
         </button>
         <button onClick={() => { setActiveTab('profile'); setSelectedCubId(null); }} style={{ background: 'none', border: 'none', color: activeTab === 'profile' ? '#fde047' : '#94a3b8', cursor: 'pointer', textAlign: 'center' }}>
           <div style={{ fontSize: '16px' }}>👤</div>
