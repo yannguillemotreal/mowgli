@@ -161,48 +161,48 @@ const ALL_TASKS: Task[] = [
 
   // --- BADGES ---
   { id: 'b_bl_1', step: 'Badges', category: 'Blancs', name: 'Servant de messe' },
-  { id: 'b_bl_2', step: 'Badges', category: 'Blancs', name: 'Liturgiste' },
-  { id: 'b_bl_3', step: 'Badges', category: 'Blancs', name: 'Ceremoniaire' },
-  { id: 'b_bl_4', step: 'Badges', category: 'Blancs', name: 'Lecteur' },
-  { id: 'b_bl_5', step: 'Badges', category: 'Blancs', name: 'Evangeliste' },
-  { id: 'b_bl_6', step: 'Badges', category: 'Blancs', name: 'Temoin du Christ' },
-  { id: 'b_bl_7', step: 'Badges', category: 'Blancs', name: 'Art floral' },
-  { id: 'b_bl_8', step: 'Badges', category: 'Blancs', name: 'Batisseur d\'eglise' },
-  { id: 'b_bl_9', step: 'Badges', category: 'Blancs', name: 'Hagiographe' },
-  { id: 'b_bl_10', step: 'Badges', category: 'Blancs', name: 'A l\'ecole de Marie' },
+  { id: 'b_bl_2', step: 'Badges', category: 'Badges', name: 'Liturgiste' },
+  { id: 'b_bl_3', step: 'Badges', category: 'Badges', name: 'Ceremoniaire' },
+  { id: 'b_bl_4', step: 'Badges', category: 'Badges', name: 'Lecteur' },
+  { id: 'b_bl_5', step: 'Badges', category: 'Badges', name: 'Evangeliste' },
+  { id: 'b_bl_6', step: 'Badges', category: 'Badges', name: 'Temoin du Christ' },
+  { id: 'b_bl_7', step: 'Badges', category: 'Badges', name: 'Art floral' },
+  { id: 'b_bl_8', step: 'Badges', category: 'Badges', name: 'Batisseur d\'eglise' },
+  { id: 'b_bl_9', step: 'Badges', category: 'Badges', name: 'Hagiographe' },
+  { id: 'b_bl_10', step: 'Badges', category: 'Badges', name: 'A l\'ecole de Marie' },
 
-  { id: 'b_rg_1', step: 'Badges', category: 'Rouges', name: 'Guide' },
-  { id: 'b_rg_2', step: 'Badges', category: 'Rouges', name: 'Messager' },
-  { id: 'b_rg_3', step: 'Badges', category: 'Rouges', name: 'Farfadet' },
-  { id: 'b_rg_4', step: 'Badges', category: 'Rouges', name: 'Aide secouriste' },
-  { id: 'b_rg_5', step: 'Badges', category: 'Rouges', name: 'Cuisinier' },
-  { id: 'b_rg_6', step: 'Badges', category: 'Rouges', name: 'Ami des petits' },
+  { id: 'b_rg_1', step: 'Badges', category: 'Badges', name: 'Guide' },
+  { id: 'b_rg_2', step: 'Badges', category: 'Badges', name: 'Messager' },
+  { id: 'b_rg_3', step: 'Badges', category: 'Badges', name: 'Farfadet' },
+  { id: 'b_rg_4', step: 'Badges', category: 'Badges', name: 'Aide secouriste' },
+  { id: 'b_rg_5', step: 'Badges', category: 'Badges', name: 'Cuisinier' },
+  { id: 'b_rg_6', step: 'Badges', category: 'Badges', name: 'Ami des petits' },
 
-  { id: 'b_ja_1', step: 'Badges', category: 'Jaunes', name: 'Artisan' },
-  { id: 'b_ja_2', step: 'Badges', category: 'Jaunes', name: 'Bon campeur' },
-  { id: 'b_ja_3', step: 'Badges', category: 'Jaunes', name: 'Grillon' },
-  { id: 'b_ja_4', step: 'Badges', category: 'Jaunes', name: 'Photographe' },
-  { id: 'b_ja_5', step: 'Badges', category: 'Jaunes', name: 'Ami des livres' },
-  { id: 'b_ja_6', step: 'Badges', category: 'Jaunes', name: 'Electricien' },
-  { id: 'b_ja_7', step: 'Badges', category: 'Jaunes', name: 'Menuisier' },
-  { id: 'b_ja_8', step: 'Badges', category: 'Jaunes', name: 'Ami des betes' },
-  { id: 'b_ja_9', step: 'Badges', category: 'Jaunes', name: 'Jardinier' },
-  { id: 'b_ja_10', step: 'Badges', category: 'Jaunes', name: 'Decorateur' },
-  { id: 'b_ja_11', step: 'Badges', category: 'Jaunes', name: 'Gabier' },
+  { id: 'b_ja_1', step: 'Badges', category: 'Badges', name: 'Artisan' },
+  { id: 'b_ja_2', step: 'Badges', category: 'Badges', name: 'Bon campeur' },
+  { id: 'b_ja_3', step: 'Badges', category: 'Badges', name: 'Grillon' },
+  { id: 'b_ja_4', step: 'Badges', category: 'Badges', name: 'Photographe' },
+  { id: 'b_ja_5', step: 'Badges', category: 'Badges', name: 'Ami des livres' },
+  { id: 'b_ja_6', step: 'Badges', category: 'Badges', name: 'Electricien' },
+  { id: 'b_ja_7', step: 'Badges', category: 'Badges', name: 'Menuisier' },
+  { id: 'b_ja_8', step: 'Badges', category: 'Badges', name: 'Ami des betes' },
+  { id: 'b_ja_9', step: 'Badges', category: 'Badges', name: 'Jardinier' },
+  { id: 'b_ja_10', step: 'Badges', category: 'Badges', name: 'Decorateur' },
+  { id: 'b_ja_11', step: 'Badges', category: 'Badges', name: 'Gabier' },
 
-  { id: 'b_blu_1', step: 'Badges', category: 'Bleus', name: 'Loup d\'Europe' },
-  { id: 'b_blu_2', step: 'Badges', category: 'Bleus', name: 'Collectionneur' },
-  { id: 'b_blu_3', step: 'Badges', category: 'Bleus', name: 'Reporter' },
-  { id: 'b_blu_4', step: 'Badges', category: 'Bleus', name: 'Kim' },
-  { id: 'b_blu_5', step: 'Badges', category: 'Bleus', name: 'Animateur de veillee' },
-  { id: 'b_blu_6', step: 'Badges', category: 'Bleus', name: 'Signaleur' },
+  { id: 'b_blu_1', step: 'Badges', category: 'Badges', name: 'Loup d\'Europe' },
+  { id: 'b_blu_2', step: 'Badges', category: 'Badges', name: 'Collectionneur' },
+  { id: 'b_blu_3', step: 'Badges', category: 'Badges', name: 'Reporter' },
+  { id: 'b_blu_4', step: 'Badges', category: 'Badges', name: 'Kim' },
+  { id: 'b_blu_5', step: 'Badges', category: 'Badges', name: 'Animateur de veillee' },
+  { id: 'b_blu_6', step: 'Badges', category: 'Badges', name: 'Signaleur' },
 
-  { id: 'b_vt_1', step: 'Badges', category: 'Verts', name: 'Bon joueur' },
-  { id: 'b_vt_2', step: 'Badges', category: 'Verts', name: 'Sportif' },
-  { id: 'b_vt_3', step: 'Badges', category: 'Verts', name: 'Ceiste-kayakiste' },
-  { id: 'b_vt_4', step: 'Badges', category: 'Verts', name: 'Loup des mers' },
-  { id: 'b_vt_5', step: 'Badges', category: 'Verts', name: 'Loup des montagnes' },
-  { id: 'b_vt_6', step: 'Badges', category: 'Verts', name: 'Cycliste' },
+  { id: 'b_vt_1', step: 'Badges', category: 'Badges', name: 'Bon joueur' },
+  { id: 'b_vt_2', step: 'Badges', category: 'Badges', name: 'Sportif' },
+  { id: 'b_vt_3', step: 'Badges', category: 'Badges', name: 'Ceiste-kayakiste' },
+  { id: 'b_vt_4', step: 'Badges', category: 'Badges', name: 'Loup des mers' },
+  { id: 'b_vt_5', step: 'Badges', category: 'Badges', name: 'Loup des montagnes' },
+  { id: 'b_vt_6', step: 'Badges', category: 'Badges', name: 'Cycliste' },
 ];
 
 const SIZAINES = ['Blancs', 'Gris', 'Noirs'];
@@ -439,30 +439,56 @@ export default function App() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {filteredCubs.map(cub => {
                 const progress = cub.progress || {};
-                const validated = Object.values(progress).filter(Boolean).length;
-                const percent = Math.round((validated / tasks.length) * 100);
+                const totalValidated = Object.values(progress).filter(Boolean).length;
+                const totalPercent = Math.round((totalValidated / tasks.length) * 100);
+
                 return (
                   <div 
                     key={cub.id}
                     onClick={() => setSelectedCubId(cub.id)}
-                    style={{ ...styles.card, display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', margin: 0, marginBottom: '8px' }}
+                    style={{ ...styles.card, cursor: 'pointer', margin: 0, marginBottom: '8px', padding: '12px' }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{ width: '38px', height: '38px', background: '#065f46', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#fde047' }}>
-                        {cub.name ? cub.name.charAt(0) : '?'}
-                      </div>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ fontWeight: 'bold' }}>{cub.name}</span>
-                          <span style={{ fontSize: '10px', background: '#334155', padding: '2px 6px', borderRadius: '6px', color: '#cbd5e1' }}>Sizaine {cub.sizain}</span>
+                    {/* Ligne principale du louveteau */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ width: '36px', height: '36px', background: '#065f46', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#fde047', fontSize: '14px' }}>
+                          {cub.name ? cub.name.charAt(0) : '?'}
+                        </div>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ fontWeight: 'bold', fontSize: '14px' }}>{cub.name}</span>
+                            <span style={{ fontSize: '10px', background: '#334155', padding: '2px 6px', borderRadius: '6px', color: '#cbd5e1' }}>Sizaine {cub.sizain}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#fde047' }}>{validated}/{tasks.length}</span>
-                      <div style={{ width: '50px', height: '6px', background: '#334155', borderRadius: '3px', marginTop: '4px', overflow: 'hidden' }}>
-                        <div style={{ width: `${percent}%`, background: '#f59e0b', height: '100%' }}></div>
+                      <div style={{ textAlign: 'right' }}>
+                        <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#fde047' }}>{totalValidated}/{tasks.length}</span>
+                        <div style={{ fontSize: '10px', color: '#94a3b8' }}>{totalPercent}%</div>
                       </div>
+                    </div>
+
+                    {/* Jauges pour les 4 grandes étapes de progression */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginTop: '10px', borderTop: '1px solid #334155', paddingTop: '8px' }}>
+                      {STEPS.map(stepName => {
+                        const stepTasks = tasks.filter(t => t.step === stepName);
+                        const stepVal = stepTasks.filter(t => progress[t.id]).length;
+                        const stepPct = stepTasks.length > 0 ? Math.round((stepVal / stepTasks.length) * 100) : 0;
+                        
+                        // Petits labels courts pour les étapes
+                        const shortName = stepName === 'Patte tendre' ? 'Patte' : stepName === '1ère étoile' ? '1ère Étoile' : stepName === '2ème étoile' ? '2ème Étoile' : 'Badges';
+
+                        return (
+                          <div key={stepName} style={{ textAlign: 'center' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px', color: '#94a3b8', marginBottom: '2px' }}>
+                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{shortName}</span>
+                              <span style={{ color: stepPct === 100 ? '#10b981' : '#fde047', fontWeight: 'bold' }}>{stepVal}/{stepTasks.length}</span>
+                            </div>
+                            <div style={{ width: '100%', height: '5px', background: '#0f172a', borderRadius: '3px', overflow: 'hidden', border: '1px solid #334155' }}>
+                              <div style={{ width: `${stepPct}%`, background: stepPct === 100 ? '#10b981' : '#f59e0b', height: '100%' }}></div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 );
@@ -502,12 +528,10 @@ export default function App() {
               const stepValidatedCount = stepTasks.filter(t => selectedCub.progress?.[t.id]).length;
               const isStepOpen = openStep === stepName;
 
-              // Récupérer les catégories uniques de cette étape
               const categoriesInStep = Array.from(new Set(stepTasks.map(t => t.category)));
 
               return (
                 <div key={stepName} style={{ ...styles.card, marginBottom: '8px', padding: '12px' }}>
-                  {/* Bouton de l'Étape */}
                   <div 
                     onClick={() => setOpenStep(isStepOpen ? null : stepName)}
                     style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
@@ -533,7 +557,6 @@ export default function App() {
 
                         return (
                           <div key={catName} style={{ background: '#0f172a', borderRadius: '8px', border: '1px solid #334155', overflow: 'hidden' }}>
-                            {/* Bouton de la Catégorie */}
                             <div 
                               onClick={() => setOpenCategory(isCatOpen ? null : catKey)}
                               style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', cursor: 'pointer', background: '#1e293b' }}
@@ -594,7 +617,7 @@ export default function App() {
             </div>
             <div style={{ ...styles.card, overflowX: 'auto', padding: '8px' }}>
               <p style={{ fontSize: '11px', color: '#94a3b8', fontStyle: 'italic', marginBottom: '8px' }}>
-                Astuce : Utilisez plutôt le carnet individuel de chaque louveteau pour naviguer facilement dans l'arborescence des épreuves.
+                Astuce : Utilisez le carnet individuel de chaque louveteau pour naviguer facilement dans l'arborescence des épreuves.
               </p>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', textAlign: 'left' }}>
                 <thead>
