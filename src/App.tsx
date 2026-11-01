@@ -160,49 +160,49 @@ const ALL_TASKS: Task[] = [
   { id: 'e2_47', step: '2ème étoile', category: 'Ami de la nature', name: 'Choix de 3 badges' },
 
   // --- BADGES ---
-  { id: 'b_bl_1', step: 'Badges', category: 'Badges', name: 'Servant de messe' },
-  { id: 'b_bl_2', step: 'Badges', category: 'Badges', name: 'Liturgiste' },
-  { id: 'b_bl_3', step: 'Badges', category: 'Badges', name: 'Ceremoniaire' },
-  { id: 'b_bl_4', step: 'Badges', category: 'Badges', name: 'Lecteur' },
-  { id: 'b_bl_5', step: 'Badges', category: 'Badges', name: 'Evangeliste' },
-  { id: 'b_bl_6', step: 'Badges', category: 'Badges', name: 'Temoin du Christ' },
-  { id: 'b_bl_7', step: 'Badges', category: 'Badges', name: 'Art floral' },
-  { id: 'b_bl_8', step: 'Badges', category: 'Badges', name: 'Batisseur d\'eglise' },
-  { id: 'b_bl_9', step: 'Badges', category: 'Badges', name: 'Hagiographe' },
-  { id: 'b_bl_10', step: 'Badges', category: 'Badges', name: 'A l\'ecole de Marie' },
+  { id: 'b_bl_1', step: 'Badges', category: 'Blancs', name: 'Servant de messe' },
+  { id: 'b_bl_2', step: 'Badges', category: 'Blancs', name: 'Liturgiste' },
+  { id: 'b_bl_3', step: 'Badges', category: 'Blancs', name: 'Ceremoniaire' },
+  { id: 'b_bl_4', step: 'Badges', category: 'Blancs', name: 'Lecteur' },
+  { id: 'b_bl_5', step: 'Badges', category: 'Blancs', name: 'Evangeliste' },
+  { id: 'b_bl_6', step: 'Badges', category: 'Blancs', name: 'Temoin du Christ' },
+  { id: 'b_bl_7', step: 'Badges', category: 'Blancs', name: 'Art floral' },
+  { id: 'b_bl_8', step: 'Badges', category: 'Blancs', name: 'Batisseur d\'eglise' },
+  { id: 'b_bl_9', step: 'Badges', category: 'Blancs', name: 'Hagiographe' },
+  { id: 'b_bl_10', step: 'Badges', category: 'Blancs', name: 'A l\'ecole de Marie' },
 
-  { id: 'b_rg_1', step: 'Badges', category: 'Badges', name: 'Guide' },
-  { id: 'b_rg_2', step: 'Badges', category: 'Badges', name: 'Messager' },
-  { id: 'b_rg_3', step: 'Badges', category: 'Badges', name: 'Farfadet' },
-  { id: 'b_rg_4', step: 'Badges', category: 'Badges', name: 'Aide secouriste' },
-  { id: 'b_rg_5', step: 'Badges', category: 'Badges', name: 'Cuisinier' },
-  { id: 'b_rg_6', step: 'Badges', category: 'Badges', name: 'Ami des petits' },
+  { id: 'b_rg_1', step: 'Badges', category: 'Rouges', name: 'Guide' },
+  { id: 'b_rg_2', step: 'Badges', category: 'Rouges', name: 'Messager' },
+  { id: 'b_rg_3', step: 'Badges', category: 'Rouges', name: 'Farfadet' },
+  { id: 'b_rg_4', step: 'Badges', category: 'Rouges', name: 'Aide secouriste' },
+  { id: 'b_rg_5', step: 'Badges', category: 'Rouges', name: 'Cuisinier' },
+  { id: 'b_rg_6', step: 'Badges', category: 'Rouges', name: 'Ami des petits' },
 
-  { id: 'b_ja_1', step: 'Badges', category: 'Badges', name: 'Artisan' },
-  { id: 'b_ja_2', step: 'Badges', category: 'Badges', name: 'Bon campeur' },
-  { id: 'b_ja_3', step: 'Badges', category: 'Badges', name: 'Grillon' },
-  { id: 'b_ja_4', step: 'Badges', category: 'Badges', name: 'Photographe' },
-  { id: 'b_ja_5', step: 'Badges', category: 'Badges', name: 'Ami des livres' },
-  { id: 'b_ja_6', step: 'Badges', category: 'Badges', name: 'Electricien' },
-  { id: 'b_ja_7', step: 'Badges', category: 'Badges', name: 'Menuisier' },
-  { id: 'b_ja_8', step: 'Badges', category: 'Badges', name: 'Ami des betes' },
-  { id: 'b_ja_9', step: 'Badges', category: 'Badges', name: 'Jardinier' },
-  { id: 'b_ja_10', step: 'Badges', category: 'Badges', name: 'Decorateur' },
-  { id: 'b_ja_11', step: 'Badges', category: 'Badges', name: 'Gabier' },
+  { id: 'b_ja_1', step: 'Badges', category: 'Jaunes', name: 'Artisan' },
+  { id: 'b_ja_2', step: 'Badges', category: 'Jaunes', name: 'Bon campeur' },
+  { id: 'b_ja_3', step: 'Badges', category: 'Jaunes', name: 'Grillon' },
+  { id: 'b_ja_4', step: 'Badges', category: 'Jaunes', name: 'Photographe' },
+  { id: 'b_ja_5', step: 'Badges', category: 'Jaunes', name: 'Ami des livres' },
+  { id: 'b_ja_6', step: 'Badges', category: 'Jaunes', name: 'Electricien' },
+  { id: 'b_ja_7', step: 'Badges', category: 'Jaunes', name: 'Menuisier' },
+  { id: 'b_ja_8', step: 'Badges', category: 'Jaunes', name: 'Ami des betes' },
+  { id: 'b_ja_9', step: 'Badges', category: 'Jaunes', name: 'Jardinier' },
+  { id: 'b_ja_10', step: 'Badges', category: 'Jaunes', name: 'Decorateur' },
+  { id: 'b_ja_11', step: 'Badges', category: 'Jaunes', name: 'Gabier' },
 
-  { id: 'b_blu_1', step: 'Badges', category: 'Badges', name: 'Loup d\'Europe' },
-  { id: 'b_blu_2', step: 'Badges', category: 'Badges', name: 'Collectionneur' },
-  { id: 'b_blu_3', step: 'Badges', category: 'Badges', name: 'Reporter' },
-  { id: 'b_blu_4', step: 'Badges', category: 'Badges', name: 'Kim' },
-  { id: 'b_blu_5', step: 'Badges', category: 'Badges', name: 'Animateur de veillee' },
-  { id: 'b_blu_6', step: 'Badges', category: 'Badges', name: 'Signaleur' },
+  { id: 'b_blu_1', step: 'Badges', category: 'Bleus', name: 'Loup d\'Europe' },
+  { id: 'b_blu_2', step: 'Badges', category: 'Bleus', name: 'Collectionneur' },
+  { id: 'b_blu_3', step: 'Badges', category: 'Bleus', name: 'Reporter' },
+  { id: 'b_blu_4', step: 'Badges', category: 'Bleus', name: 'Kim' },
+  { id: 'b_blu_5', step: 'Badges', category: 'Bleus', name: 'Animateur de veillee' },
+  { id: 'b_blu_6', step: 'Badges', category: 'Bleus', name: 'Signaleur' },
 
-  { id: 'b_vt_1', step: 'Badges', category: 'Badges', name: 'Bon joueur' },
-  { id: 'b_vt_2', step: 'Badges', category: 'Badges', name: 'Sportif' },
-  { id: 'b_vt_3', step: 'Badges', category: 'Badges', name: 'Ceiste-kayakiste' },
-  { id: 'b_vt_4', step: 'Badges', category: 'Badges', name: 'Loup des mers' },
-  { id: 'b_vt_5', step: 'Badges', category: 'Badges', name: 'Loup des montagnes' },
-  { id: 'b_vt_6', step: 'Badges', category: 'Badges', name: 'Cycliste' },
+  { id: 'b_vt_1', step: 'Badges', category: 'Verts', name: 'Bon joueur' },
+  { id: 'b_vt_2', step: 'Badges', category: 'Verts', name: 'Sportif' },
+  { id: 'b_vt_3', step: 'Badges', category: 'Verts', name: 'Ceiste-kayakiste' },
+  { id: 'b_vt_4', step: 'Badges', category: 'Verts', name: 'Loup des mers' },
+  { id: 'b_vt_5', step: 'Badges', category: 'Verts', name: 'Loup des montagnes' },
+  { id: 'b_vt_6', step: 'Badges', category: 'Verts', name: 'Cycliste' },
 ];
 
 const SIZAINES = ['Blancs', 'Gris', 'Noirs'];
@@ -379,7 +379,7 @@ export default function App() {
 
     const stepPriority = ['Patte tendre', '1ère étoile', '2ème étoile', 'Badges'];
 
-    const taskDeficit: { task: Task; missingCount: number; stepIndex: number }[] = tasks.map(task => {
+    const taskDeficit = tasks.map(task => {
       let missing = 0;
       cubs.forEach(cub => {
         if (!cub.progress?.[task.id]) missing++;
@@ -397,7 +397,7 @@ export default function App() {
 
     const selectedTasks = taskDeficit.slice(0, 6).map(item => item.task);
 
-    const activities = selectedTasks.map((t, index) => {
+    const activities = selectedTasks.map((t) => {
       let gameName = "Grand Jeu de la Jungle";
       let rule = "Jeu rapide de 5 minutes axé sur la cohésion de sizaine pour acquérir ce point.";
 
