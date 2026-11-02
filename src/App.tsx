@@ -282,35 +282,9 @@ export default function App() {
   const [openStep, setOpenStep] = useState<string | null>('Patte tendre');
   const [openCategory, setOpenCategory] = useState<string | null>(null);
 
-// ÉTAT POUR L'INTEGRATION IA (Un grand jeu unique)
-const [aiBigGame, setAiBigGame] = useState<BigGame | null>(null);
-const [isLoadingAi, setIsLoadingAi] = useState(false);
-
-// APPEL À LA NETLIFY FUNCTION POUR LE GRAND JEU
-const fetchAiGamesFromNetlify = async () => {
-  setIsLoadingAi(true);
-  try {
-    const summary = aiData.selectedTasks.map(t => `- ${t.step}: ${t.name}`).join('\n');
-
-    const res = await fetch('/.netlify/functions/gemini-games', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ missingTasksSummary: summary }),
-    });
-
-    if (!res.ok) throw new Error('Erreur réseau');
-
-    const data = await res.json();
-    if (data && data.gameTitle) {
-      setAiBigGame(data);
-    }
-  } catch (e) {
-    console.error("Erreur d'appel à Gemini via Netlify:", e);
-    alert("Impossible de joindre l'IA pour le moment.");
-  } finally {
-    setIsLoadingAi(false);
-  }
-};
+  // ÉTAT POUR L'INTEGRATION IA (Un grand jeu unique)
+  const [aiBigGame, setAiBigGame] = useState<BigGame | null>(null);
+  const [isLoadingAi, setIsLoadingAi] = useState(false);
 
   const handleChefChange = (chef: string) => {
     setCurrentChef(chef);
@@ -418,7 +392,7 @@ const fetchAiGamesFromNetlify = async () => {
 
   // LOGIQUE D'ANALYSE DES MANQUES
   const getAiRecommendations = () => {
-    if (cubs.length === 0) return { selectedTasks: [], defaultActivities: [] };
+    if (cubs.length === 0) return { selectedTasks: [] };
 
     const stepPriority = ['Patte tendre', '1ère étoile', '2ème étoile', 'Badges'];
 
@@ -439,45 +413,12 @@ const fetchAiGamesFromNetlify = async () => {
     });
 
     const selectedTasks = taskDeficit.slice(0, 6).map(item => item.task);
-
-    const defaultActivities = selectedTasks.map((t) => {
-      let gameName = "Grand Jeu de la Jungle";
-      let rule = "Jeu rapide de 5 minutes axé sur la cohésion de sizaine pour acquérir ce point.";
-
-      const nameLower = t.name.toLowerCase();
-      if (nameLower.includes('noeud') || nameLower.includes('brelage')) {
-        gameName = "Le Relais des Nœuds Express";
-        rule = "En sizaine, chaque louveteau court faire un nœud imparti sur un piquet, tape dans la main du suivant. Chrono : 5 minutes max.";
-      } else if (nameLower.includes('semaphore') || nameLower.includes('indicatif')) {
-        gameName = "Le Télégramme de Mowgli";
-        rule = "Un chef mime ou transmet un mot en sémaphore d'un côté du camp, le premier louveteau qui décode court le relayer.";
-      } else if (nameLower.includes('prière') || nameLower.includes('dizainier') || nameLower.includes('messe') || nameLower.includes('dieu')) {
-        gameName = "La Minute du Loup Contemplatif";
-        rule = "Rassemblement autour du Rocher du Conseil pour un court topo et un chant gestué de 5 minutes avant le grand jeu.";
-      } else if (nameLower.includes('kim') || nameLower.includes('objet') || nameLower.includes('observation')) {
-        gameName = "Le Kim de Bagheera";
-        rule = "10 objets posés sur une bâche, on observe 1 minute, on cache, les louveteaux écrivent ce qu'ils ont vu en 3 minutes.";
-      } else if (nameLower.includes('marche') || nameLower.includes('corps') || nameLower.includes('saut') || nameLower.includes('courir')) {
-        gameName = "Le Parcours de la Canopée";
-        rule = "Petit parcours d'agilité chronométré en un contre un à travers les arbres du camp, sans courir dans les zones interdites.";
-      } else if (nameLower.includes('arbre') || nameLower.includes('animal') || nameLower.includes('nature') || nameLower.includes('piste')) {
-        gameName = "Pistage Éclair en Sizaine";
-        rule = "Suivre une piste de signes de piste de 50 mètres tracée à la craie ou au bois mort autour du lieu de rassemblement.";
-      }
-
-      return {
-        pointName: t.name,
-        gameTitle: gameName,
-        description: rule
-      };
-    });
-
-    return { selectedTasks, defaultActivities };
+    return { selectedTasks };
   };
 
   const aiData = getAiRecommendations();
 
-  // APPEL À LA NETLIFY FUNCTION POUR SÉCURISER L'API GEMINI
+  // APPEL À LA NETLIFY FUNCTION POUR LE GRAND JEU
   const fetchAiGamesFromNetlify = async () => {
     setIsLoadingAi(true);
     try {
@@ -492,12 +433,12 @@ const fetchAiGamesFromNetlify = async () => {
       if (!res.ok) throw new Error('Erreur réseau');
 
       const data = await res.json();
-      if (Array.isArray(data)) {
-        setAiGames(data);
+      if (data && data.gameTitle) {
+        setAiBigGame(data);
       }
     } catch (e) {
       console.error("Erreur d'appel à Gemini via Netlify:", e);
-      alert("Impossible de joindre l'IA pour le moment. Affichage des jeux standards.");
+      alert("Impossible de joindre l'IA pour le moment.");
     } finally {
       setIsLoadingAi(false);
     }
@@ -517,7 +458,6 @@ const fetchAiGamesFromNetlify = async () => {
   };
 
   const currentUrl = window.location.origin + window.location.pathname + '?meute=' + packCode.toLowerCase();
-  const displayedActivities = aiGames.length > 0 ? aiGames : aiData.defaultActivities;
 
   return (
     <div style={styles.container}>
