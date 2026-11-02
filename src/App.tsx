@@ -39,10 +39,17 @@ interface Cub {
   validations: Record<string, ValidationInfo>;
 }
 
-interface AiGame {
+interface ObjectiveMapping {
   pointName: string;
+  validationMechanic: string;
+}
+
+interface BigGame {
   gameTitle: string;
-  description: string;
+  duration: string;
+  overview: string;
+  rules: string;
+  objectiveMappings: ObjectiveMapping[];
 }
 
 // ARBORESCENCE COMPLÈTE DES ÉPREUVES
@@ -275,9 +282,35 @@ export default function App() {
   const [openStep, setOpenStep] = useState<string | null>('Patte tendre');
   const [openCategory, setOpenCategory] = useState<string | null>(null);
 
-  // ÉTAT POUR L'INTEGRATION IA GEMINI
-  const [aiGames, setAiGames] = useState<AiGame[]>([]);
-  const [isLoadingAi, setIsLoadingAi] = useState(false);
+// ÉTAT POUR L'INTEGRATION IA (Un grand jeu unique)
+const [aiBigGame, setAiBigGame] = useState<BigGame | null>(null);
+const [isLoadingAi, setIsLoadingAi] = useState(false);
+
+// APPEL À LA NETLIFY FUNCTION POUR LE GRAND JEU
+const fetchAiGamesFromNetlify = async () => {
+  setIsLoadingAi(true);
+  try {
+    const summary = aiData.selectedTasks.map(t => `- ${t.step}: ${t.name}`).join('\n');
+
+    const res = await fetch('/.netlify/functions/gemini-games', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ missingTasksSummary: summary }),
+    });
+
+    if (!res.ok) throw new Error('Erreur réseau');
+
+    const data = await res.json();
+    if (data && data.gameTitle) {
+      setAiBigGame(data);
+    }
+  } catch (e) {
+    console.error("Erreur d'appel à Gemini via Netlify:", e);
+    alert("Impossible de joindre l'IA pour le moment.");
+  } finally {
+    setIsLoadingAi(false);
+  }
+};
 
   const handleChefChange = (chef: string) => {
     setCurrentChef(chef);
@@ -701,88 +734,61 @@ export default function App() {
         {activeTab === 'ai' && (
           <div>
             <div style={styles.card}>
-              <h2 style={{ margin: '0 0 6px 0', fontSize: '16px', color: '#fde047' }}>🤖 Assistant IA & Sortie de Meute</h2>
+              <h2 style={{ margin: '0 0 6px 0', fontSize: '16px', color: '#fde047' }}>🤖 Assistant IA & Grand Jeu de Meute</h2>
               <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8', lineHeight: '1.4' }}>
-                L'IA analyse les carnets de toute la meute (priorité Patte Tendre ➔ 1ère Étoile ➔ 2ème Étoile ➔ Badges) et vous propose 6 objectifs sur-mesure !
+                L'IA analyse les manques de toute la meute et conçoit un grand jeu immersif unique pour valider les 6 points prioritaires en une seule fois !
               </p>
             </div>
 
-            <div style={{ ...styles.card, overflowX: 'auto', padding: '12px' }}>
-              <h3 style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#fde047' }}>📊 Matrice des 6 Objectifs prioritaires</h3>
-              {cubs.length === 0 ? (
-                <p style={{ fontSize: '12px', color: '#94a3b8' }}>Ajoutez des louveteaux pour activer l'analyse.</p>
-              ) : (
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', textAlign: 'center' }}>
-                  <thead>
-                    <tr style={{ borderBottom: '1px solid #334155', color: '#94a3b8' }}>
-                      <th style={{ padding: '6px', textAlign: 'left' }}>Louveteau</th>
-                      {aiData.selectedTasks.map((t, idx) => (
-                        <th key={t.id} style={{ padding: '6px', maxWidth: '60px' }} title={`${t.step} - ${t.name}`}>
-                          Obj {idx + 1}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {cubs.map(cub => (
-                      <tr key={cub.id} style={{ borderBottom: '1px solid #1e293b' }}>
-                        <td style={{ padding: '6px', textAlign: 'left', fontWeight: 'bold', whiteSpace: 'nowrap' }}>{cub.name}</td>
-                        {aiData.selectedTasks.map(t => {
-                          const isAcquired = !!cub.progress?.[t.id];
-                          return (
-                            <td key={t.id} style={{ padding: '6px' }}>
-                              <span style={{ fontSize: '14px' }}>{isAcquired ? '✅' : '❌'}</span>
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-
-              <div style={{ marginTop: '12px', borderTop: '1px solid #334155', paddingTop: '8px' }}>
-                <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#a7f3d0' }}>Détail des 6 points ciblés :</span>
-                <ul style={{ margin: '4px 0 0 0', paddingLeft: '16px', fontSize: '11px', color: '#cbd5e1' }}>
-                  {aiData.selectedTasks.map((t, idx) => (
-                    <li key={t.id} style={{ marginBottom: '2px' }}>
-                      <b>Obj {idx + 1} ({t.step}) :</b> {t.name}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {/* Bouton de génération */}
+            <div style={{ ...styles.card, textAlign: 'center' }}>
+              <button 
+                onClick={fetchAiGamesFromNetlify}
+                disabled={isLoadingAi || cubs.length === 0}
+                style={{ ...styles.button, width: '100%', padding: '12px', background: isLoadingAi ? '#334155' : '#059669', color: '#fff', fontSize: '14px' }}
+              >
+                {isLoadingAi ? '✨ Conception du grand jeu en cours...' : '✨ Générer le Grand Jeu de Meute'}
+              </button>
             </div>
 
-            <div style={styles.card}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <h3 style={{ margin: 0, fontSize: '14px', color: '#fde047' }}>⚡ 6 Jeux scouts express (5 minutes max)</h3>
-                <button 
-                  onClick={fetchAiGamesFromNetlify}
-                  disabled={isLoadingAi || cubs.length === 0}
-                  style={{ ...styles.button, fontSize: '11px', padding: '6px 10px', background: isLoadingAi ? '#334155' : '#059669', color: '#fff' }}
-                >
-                  {isLoadingAi ? '✨ Génération...' : '✨ Générer avec Gemini'}
-                </button>
-              </div>
+            {/* Affichage du Grand Jeu généré */}
+            {aiBigGame && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={styles.card}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <h3 style={{ margin: 0, fontSize: '15px', color: '#fde047' }}>🏰 {aiBigGame.gameTitle}</h3>
+                    <span style={{ fontSize: '11px', background: '#065f46', color: '#a7f3d0', padding: '2px 8px', borderRadius: '6px', fontWeight: 'bold' }}>
+                      ⏱️ {aiBigGame.duration}
+                    </span>
+                  </div>
+                  
+                  <p style={{ margin: '0 0 10px 0', fontSize: '12px', color: '#cbd5e1', fontStyle: 'italic' }}>
+                    {aiBigGame.overview}
+                  </p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {displayedActivities.map((act, idx) => (
-                  <div key={idx} style={{ background: '#0f172a', padding: '10px', borderRadius: '8px', border: '1px solid #334155' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#f59e0b' }}>
-                        {idx + 1}. {act.gameTitle}
-                      </span>
-                      <span style={{ fontSize: '9px', background: '#065f46', color: '#a7f3d0', padding: '2px 6px', borderRadius: '4px' }}>
-                        Cible : {act.pointName}
-                      </span>
-                    </div>
-                    <p style={{ margin: 0, fontSize: '11px', color: '#94a3b8', lineHeight: '1.3' }}>
-                      {act.description}
+                  <div style={{ background: '#0f172a', padding: '10px', borderRadius: '8px', border: '1px solid #334155', marginBottom: '10px' }}>
+                    <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#f59e0b', display: 'block', marginBottom: '4px' }}>📜 Règles et déroulement :</span>
+                    <p style={{ margin: 0, fontSize: '11px', color: '#94a3b8', whiteSpace: 'pre-line', lineHeight: '1.4' }}>
+                      {aiBigGame.rules}
                     </p>
                   </div>
-                ))}
+
+                  <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#a7f3d0', display: 'block', marginBottom: '6px' }}>🎯 Validation des 6 objectifs :</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    {aiBigGame.objectiveMappings?.map((mapping, idx) => (
+                      <div key={idx} style={{ background: '#0f172a', padding: '8px', borderRadius: '6px', border: '1px solid #334155', fontSize: '11px' }}>
+                        <div style={{ color: '#fde047', fontWeight: 'bold', marginBottom: '2px' }}>
+                          • {mapping.pointName}
+                        </div>
+                        <div style={{ color: '#94a3b8' }}>
+                          {mapping.validationMechanic}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
 
