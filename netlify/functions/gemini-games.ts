@@ -14,12 +14,12 @@ const handler: Handler = async (event) => {
     }
 
     const prompt = `
-      Tu es un chef scout expert du mouvement des Scouts d'Europe et créatif dans la méthode de la Jungle (Mowgli). Tu es Akela d'une meute de louveateaux de 8 à 12 ans.
-      Voici les 6 points de progression prioritaires qui manquent à ma meute et qu'il faut absolument faire valider :
+      Tu es un chef scout expert de la méthode des Scouts d'Europe et créatif dans la méthode de la Jungle (Mowgli). Tu es Akela d'une meute de Louveteaux.
+      Voici les points de progression prioritaires choisis par les chefs pour la meute :
       ${missingTasksSummary}
 
       Conçois UN SEUL grand jeu immersif de type "Jungle" d'environ 20 minutes. 
-      Ce jeu doit permettre aux louveteaux de valider simultanément ces 6 points précis au cours de son déroulement.
+      Ce jeu doit permettre aux louveteaux de valider simultanément tous ces points précis au cours de son déroulement.
 
       Réponds STRICTEMENT sous un format JSON valide (un objet unique, pas un tableau) sans texte markdown autour, avec cette structure exacte :
       {
@@ -29,27 +29,7 @@ const handler: Handler = async (event) => {
         "rules": "Règles détaillées du jeu pas à pas (comment on y joue, rôles, déroulement).",
         "objectiveMappings": [
           {
-            "pointName": "Nom exact du 1er point manquant",
-            "validationMechanic": "Explique précisément quelle action dans le jeu permet de valider ce point."
-          },
-          {
-            "pointName": "Nom exact du 2ème point manquant",
-            "validationMechanic": "Explique précisément quelle action dans le jeu permet de valider ce point."
-          },
-          {
-            "pointName": "Nom exact du 3ème point manquant",
-            "validationMechanic": "Explique précisément quelle action dans le jeu permet de valider ce point."
-          },
-          {
-            "pointName": "Nom exact du 4ème point manquant",
-            "validationMechanic": "Explique précisément quelle action dans le jeu permet de valider ce point."
-          },
-          {
-            "pointName": "Nom exact du 5ème point manquant",
-            "validationMechanic": "Explique précisément quelle action dans leజి jeu permet de valider ce point."
-          },
-          {
-            "pointName": "Nom exact du 6ème point manquant",
+            "pointName": "Nom exact du 1er point",
             "validationMechanic": "Explique précisément quelle action dans le jeu permet de valider ce point."
           }
         ]
